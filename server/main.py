@@ -5,7 +5,7 @@ from server import routes
 
 async def main():
 
-    print(server.command_map)
+    print(server.command_map)  # TODO: delete after testing, shows that command map is working
     await server.run_server()
 
 
