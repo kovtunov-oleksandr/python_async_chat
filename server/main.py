@@ -1,11 +1,16 @@
 import asyncio
-from server.config.config import server
+import logging
+import sys
+from server.config import server
 from server import routes
+
+logging.basicConfig(stream=sys.stderr, level=logging.NOTSET,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 async def main():
 
-    print(server.command_map)  # TODO: delete after testing, shows that command map is working
     await server.run_server()
 
 
