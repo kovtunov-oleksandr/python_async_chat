@@ -1,0 +1,1 @@
+from desktop.windows.sign_up_window.sign_up_window import Ui_SignUpMenu
