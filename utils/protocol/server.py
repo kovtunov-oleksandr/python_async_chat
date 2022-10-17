@@ -1,38 +1,44 @@
 import asyncio
-from utils.protocol.request import Request
+import logging
+import sys
+from utils.protocol.message import Message
 from utils.protocol.connection import Connection
+from utils.protocol.data_converters import parse_protocol_message
+
+logging.basicConfig(stream=sys.stderr, level=logging.NOTSET,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 class Server:
 
-    def __init__(self, host, port, decode_format):
-        self.HOST = host
-        self.PORT = port
-        self.FORMAT = decode_format
-        self.sessions = {}  # TODO: {login: connection: Connection}
-        self.command_map = {}
+    DATA_CODING_FORMAT = "utf-8"
+
+    def __init__(self, host: str = 'localhost', port: int = 5050):
+        self.host = host
+        self.port = port
+        self.sessions = {}
+        self.command_handler_map = {}
 
     async def run_server(self):
-        server = await asyncio.start_server(self.handle_connection, self.HOST, self.PORT)
+        server = await asyncio.start_server(self.handle_connection, self.host, self.port)
+        logger.info(f'Server started on {self.host}:{self.port}')
+        logger.info(f'Command handle map is formed: {self.command_handler_map}')
         async with server:
             await server.serve_forever()
 
     async def handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+        """ Data protocol: command;;status_code;;sender;;receiver;;auth;;content;;time """
         while True:
-            data = await reader.read(1024)  # TODO: command;;status_code;;sender;;receiver;;auth;;content;;time
-            print(data)  # TODO: log this or delete after testing
-            connection = Connection(writer, '_')  # TODO: when DB is ready sign in method should create session with it
-            request: Request = self.decode_protocol(data.decode(self.FORMAT))
-            await self.command_map.get(request.command)(request)
+            data = await reader.read(1024)
+            logger.debug(f'Received from {writer.get_extra_info("peername")} data: {data}')
+            connection = Connection(writer)
+            message: Message = parse_protocol_message(data.decode(self.DATA_CODING_FORMAT))
+            logger.debug(f'Data decoded: {message.form_protocol()}')
+            await self.command_handler_map.get(message.command)(message)
 
     def add_handler(self, method: str):
         def inner(func):
-            self.command_map[method] = func
+            logger.info(f'Handler collector has started, new handler found: {func.__name__}')
+            self.command_handler_map[method] = func
         return inner
-
-    def decode_protocol(self, data: str) -> Request:
-        data = data.split(';;')
-        request = Request(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
-        print(request)  # TODO: log this or delete after testing
-        return request
-
