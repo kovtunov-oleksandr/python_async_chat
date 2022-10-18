@@ -1,13 +1,14 @@
-from sqlalchemy import Column
+from sqlalchemy import Column, Integer
 from sqlalchemy import String
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
 class User(Base):
-    __tablename__ = "Users"
+    __tablename__ = "users"
 
-    nickname = Column(String, primary_key=True, unique=True)
+    id = Column(Integer, primary_key=True)
+    nickname = Column(String, unique=True)
     password = Column(String)
     email = Column(String, nullable=True)
 
