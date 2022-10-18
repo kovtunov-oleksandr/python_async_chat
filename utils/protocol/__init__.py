@@ -1,4 +1,4 @@
 from utils.protocol.connection import Connection
-from utils.protocol.request import Request
+from utils.protocol.message import Message
 from utils.protocol.server import Server
-from utils.protocol.timestamp import form_timestamp
+from utils.protocol.data_converters import form_timestamp
