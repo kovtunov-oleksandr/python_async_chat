@@ -10,6 +10,6 @@ class Connection:
     reader: asyncio.StreamReader
 
     def send_message(self, message: Message):
-        logger.debug(f'Sending to {self.writer.get_extra_info("peername")} data:{message.form_protocol()}')
+        logger.debug(f'OUT: {self.writer.get_extra_info("peername")} data:{message.form_protocol()}')
         self.writer.write(message.form_protocol().encode("utf-8"))
         self.writer.drain()
