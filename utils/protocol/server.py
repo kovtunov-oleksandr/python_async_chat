@@ -1,22 +1,16 @@
 import asyncio
-import logging
-import sys
+from utils.logger import logger
 from utils.protocol.message import Message
 from utils.protocol.connection import Connection
 from utils.protocol.data_converters import parse_protocol_message
 
-logging.basicConfig(stream=sys.stderr, level=logging.NOTSET,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 
 class Server:
 
-    DATA_CODING_FORMAT = "utf-8"
-
-    def __init__(self, host: str = 'localhost', port: int = 5050):
+    def __init__(self, host: str = 'localhost', port: int = 5050, data_coding_format='utf-8'):
         self.host = host
         self.port = port
+        self.data_coding_format = data_coding_format
         self.sessions = {}
         self.command_handler_map = {}
 
@@ -28,12 +22,11 @@ class Server:
             await server.serve_forever()
 
     async def handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-        """ Data protocol: command;;status_code;;sender;;receiver;;auth;;content;;time """
         while True:
             data = await reader.read(1024)
             logger.debug(f'Received from {writer.get_extra_info("peername")} data: {data}')
             connection = Connection(writer)
-            message: Message = parse_protocol_message(data.decode(self.DATA_CODING_FORMAT))
+            message: Message = parse_protocol_message(data.decode(self.data_coding_format))
             logger.debug(f'Data decoded: {message.form_protocol()}')
             await self.command_handler_map.get(message.command)(message)
 
