@@ -1,1 +1,0 @@
-from desktop.windows.sign_in_window.sign_in_window import Ui_SignInMenu
