@@ -1,6 +1,6 @@
 import asyncio
 from server.config import server
-from server import routes
+from server import routes # noqa
 
 
 async def main():

@@ -9,7 +9,7 @@ class Connection:
     writer: asyncio.StreamWriter
     reader: asyncio.StreamReader
 
-    def send_message(self, message: Message):
+    async def send_message(self, message: Message):
         logger.debug(f'OUT: {self.writer.get_extra_info("peername")} data:{message.form_protocol()}')
         self.writer.write(message.form_protocol().encode("utf-8"))
-        self.writer.drain()
+        await self.writer.drain()
