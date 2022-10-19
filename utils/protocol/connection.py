@@ -1,12 +1,7 @@
 import asyncio
 import dataclasses
-import logging
-import sys
+from utils.logger import logger
 from utils.protocol.message import Message
-
-logging.basicConfig(stream=sys.stderr, level=logging.NOTSET,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass
