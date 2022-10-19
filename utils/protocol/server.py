@@ -2,7 +2,6 @@ import asyncio
 from utils.logger import logger
 from utils.protocol.message import Message
 from utils.protocol.connection import Connection
-from utils.protocol.data_converters import parse_protocol_message
 
 
 class Server:
@@ -20,13 +19,10 @@ class Server:
             await server.serve_forever()
 
     async def _handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+        connection = Connection(writer, reader)
         while True:
-            data = await reader.read(1024)
-            logger.debug(f'IN: {writer.get_extra_info("peername")} data: {data}')
-            connection = Connection(writer, reader)
-            message: Message = parse_protocol_message(data.decode(self.data_coding_format))
-            logger.debug(f'Data decoded: {message.form_protocol()}')
-            await self._get_handler(message, connection)
+            async for message in connection.start_reading():
+                await self._get_handler(message, connection)
 
     async def _get_handler(self, message: Message, connection: Connection):
         await self.__command_handler_map[message.command](message, connection)
