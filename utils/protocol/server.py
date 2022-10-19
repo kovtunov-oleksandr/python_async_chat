@@ -25,7 +25,7 @@ class Server:
         while True:
             data = await reader.read(1024)
             logger.debug(f'Received from {writer.get_extra_info("peername")} data: {data}')
-            connection = Connection(writer)
+            connection = Connection(writer, reader)
             message: Message = parse_protocol_message(data.decode(self.data_coding_format))
             logger.debug(f'Data decoded: {message.form_protocol()}')
             await self.command_handler_map.get(message.command)(message)

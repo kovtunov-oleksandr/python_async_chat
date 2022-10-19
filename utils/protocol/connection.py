@@ -7,6 +7,7 @@ from utils.protocol.message import Message
 @dataclasses.dataclass
 class Connection:
     writer: asyncio.StreamWriter
+    reader: asyncio.StreamReader
 
     def send_message(self, message: Message):
         logger.debug(f'Sending to {self.writer.get_extra_info("peername")} data:{message.form_protocol()}')
