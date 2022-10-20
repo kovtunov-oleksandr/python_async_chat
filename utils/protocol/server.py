@@ -6,10 +6,9 @@ from utils.protocol.connection import Connection
 
 class Server:
 
-    def __init__(self, host: str = 'localhost', port: int = 5050, data_coding_format='utf-8'):
+    def __init__(self, host: str = 'localhost', port: int = 5050):
         self.host = host
         self.port = port
-        self.data_coding_format = data_coding_format
         self.__command_handler_map = {}
 
     async def run_server(self):
@@ -20,9 +19,8 @@ class Server:
 
     async def _handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         connection = Connection(writer, reader)
-        while True:
-            async for message in connection.start_reading():
-                await self._get_handler(message, connection)
+        async for message in connection.start_reading():
+            await self._get_handler(message, connection)
 
     async def _get_handler(self, message: Message, connection: Connection):
         await self.__command_handler_map[message.command](message, connection)

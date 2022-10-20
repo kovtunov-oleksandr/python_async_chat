@@ -1,11 +1,13 @@
 import asyncio
 from utils.logger import logger
-from utils.protocol.data_converters import parse_protocol_message
 from utils.protocol.message import Message
 from utils.protocol.waiter import Waiter
 
 
 class Connection:
+
+    DATA_CODING_FORMAT = "utf-8"
+
     def __init__(self, writer: asyncio.StreamWriter, reader: asyncio.StreamReader):
         self.writer = writer
         self.reader = reader
@@ -13,14 +15,14 @@ class Connection:
         extra_info = self.writer.get_extra_info("peername")
         self.remote_host = extra_info[0] + ":" + str(extra_info[1])
 
-    async def create_message_waiter(self, command: str):
+    async def create_message_waiter(self, command: str) -> Waiter:
         waiter = Waiter(command)
         self.waiters[command] = waiter
         return waiter
 
     async def send_message(self, message: Message):
         logger.debug(f"OUT: {self.remote_host} data:{message}")
-        self.writer.write(message.form_protocol().encode("utf-8"))
+        self.writer.write(message.form_protocol().encode(self.DATA_CODING_FORMAT))
         await self.writer.drain()
 
     async def send_message_wait_answer(
@@ -36,7 +38,7 @@ class Connection:
         data = await self.reader.read(1024)
         if not data:
             raise ConnectionError("Connection closed")
-        message: Message = parse_protocol_message(data.decode("utf-8"))
+        message: Message = Message.parse_protocol_message(data.decode(self.DATA_CODING_FORMAT))
         logger.debug(f"IN: {self.remote_host}: {message}")
         return message
 
