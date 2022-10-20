@@ -9,5 +9,10 @@ class Message:
     token: str
     content: str
 
-    def form_protocol(self):
+    def form_protocol(self) -> str:
         return f'{self.command};;{self.sender};;{self.receiver};;{self.token};;{self.content}'
+
+    @classmethod
+    def parse_protocol_message(cls, data: str):
+        data = data.split(';;')
+        return cls(*data)
