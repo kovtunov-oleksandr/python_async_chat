@@ -1,7 +1,10 @@
 from PyQt5.QtWidgets import QMainWindow
 
 
-class BaseWindow(QMainWindow):
+class BaseWindow:
     def __init__(self, client):
-        super().__init__()
         self.client = client
+
+    @staticmethod
+    def create_window():
+        return QMainWindow()
