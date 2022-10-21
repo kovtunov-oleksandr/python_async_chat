@@ -1,19 +1,12 @@
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton
-from desktop.windows import BaseWindow
+from desktop.windows import BaseWindow, StartWindowMixin
 
 
-class SignInWindow(BaseWindow):
+class SignInWindow(BaseWindow, StartWindowMixin):
     def __init__(self, client):
         super().__init__(client)
-        self.client = client
-
-    def return_to_start_menu(self):
-        from desktop.windows.start_window import StartWindow
-        self.window = StartWindow(self.client)
-        self.window.setup_ui()
-        self.window.show()
-        self.close()
+        self.window = self.create_window()
 
     def click_sign_in(self, nickname: QLineEdit, password: QLineEdit):
         sign_in_info = self.read_sign_in_info(nickname, password)
@@ -26,23 +19,23 @@ class SignInWindow(BaseWindow):
         return sign_in_info
 
     def setup_ui(self):
-        self.resize(800, 600)
-        self.setWindowTitle("Logging in")
-        self.setStyleSheet(
+        self.window.resize(800, 600)
+        self.window.setWindowTitle("Logging in")
+        self.window.setStyleSheet(
             "background-color: rgb(244, 244, 244);\n" "color: rgb(27, 28, 28);"
         )
 
-        self.title = QLabel(self)
-        self.title.setGeometry(QRect(170, 110, 450, 50))
-        self.title.setStyleSheet(
+        self.window.title = QLabel(self.window)
+        self.window.title.setGeometry(QRect(170, 110, 450, 50))
+        self.window.title.setStyleSheet(
             "\n" "color: rgb(0, 0, 0);\n" 'font: 18pt ".SF NS Text";'
         )
-        self.title.setAlignment(Qt.AlignHCenter)
-        self.title.setText("Sign In")
+        self.window.title.setAlignment(Qt.AlignHCenter)
+        self.window.title.setText("Sign In")
 
-        self.nickname_input = QLineEdit(self)
-        self.nickname_input.setGeometry(QRect(230, 190, 320, 30))
-        self.nickname_input.setStyleSheet(
+        self.window.nickname_input = QLineEdit(self.window)
+        self.window.nickname_input.setGeometry(QRect(230, 190, 320, 30))
+        self.window.nickname_input.setStyleSheet(
             "border-style: outset;\n"
             "border-color: rgb(192, 192, 192);\n"
             "border-radius: 5px;\n"
@@ -50,11 +43,11 @@ class SignInWindow(BaseWindow):
             'font: 11pt "Ubuntu Regular";\n'
             "color: rgb(128, 128, 128)"
         )
-        self.nickname_input.setPlaceholderText("Nickname")
+        self.window.nickname_input.setPlaceholderText("Nickname")
 
-        self.password_input = QLineEdit(self)
-        self.password_input.setGeometry(QRect(230, 240, 320, 30))
-        self.password_input.setStyleSheet(
+        self.window.password_input = QLineEdit(self.window)
+        self.window.password_input.setGeometry(QRect(230, 240, 320, 30))
+        self.window.password_input.setStyleSheet(
             "border-style: outset;\n"
             "border-color: rgb(192, 192, 192);\n"
             "border-radius: 5px;\n"
@@ -62,34 +55,39 @@ class SignInWindow(BaseWindow):
             'font: 11pt "Ubuntu Regular";\n'
             "color: rgb(128, 128, 128)"
         )
-        self.password_input.setEchoMode(QLineEdit.Password)
-        self.password_input.setPlaceholderText("Password")
+        self.window.password_input.setEchoMode(QLineEdit.Password)
+        self.window.password_input.setPlaceholderText("Password")
 
-        self.sign_in = QPushButton(self, clicked=lambda: self.click_sign_in(self.nickname_input, self.password_input))
-        self.sign_in.setGeometry(QRect(320, 310, 140, 40))
-        self.sign_in.setStyleSheet(
+        self.window.sign_in = QPushButton(self.window, clicked=lambda: self.click_sign_in(
+            self.window.nickname_input,
+            self.window.password_input
+        ))
+        self.window.sign_in.setGeometry(QRect(320, 310, 140, 40))
+        self.window.sign_in.setStyleSheet(
             "color: rgb(250, 255, 255);\n"
             "background-color: rgb(167, 10, 61);\n"
             "border-style: outset;\n"
             "border-radius: 10px;\n"
             'font: 14pt "Arial";'
         )
-        self.sign_in.setText("Sign In")
+        self.window.sign_in.setText("Sign In")
 
-        self.return_to_start_menu_but = QPushButton(self, clicked=self.return_to_start_menu)
-        self.return_to_start_menu_but.setGeometry(QRect(320, 360, 140, 40))
-        self.return_to_start_menu_but.setStyleSheet(
+        self.window.return_to_start_menu_but = QPushButton(
+            self.window, clicked=lambda: self.return_to_start_menu(self.client, self.window)
+        )
+        self.window.return_to_start_menu_but.setGeometry(QRect(320, 360, 140, 40))
+        self.window.return_to_start_menu_but.setStyleSheet(
             "color: rgb(250, 255, 255);\n"
             "background-color: rgb(167, 10, 61);\n"
             "border-style: outset;\n"
             "border-radius: 10px;\n"
             'font: 14pt "Arial";'
         )
-        self.return_to_start_menu_but.setText("Return")
+        self.window.return_to_start_menu_but.setText("Return")
 
-        self.server_response = QLabel(self)
-        self.server_response.setGeometry(QRect(270, 160, 251, 22))
-        self.server_response.setStyleSheet('font: 11pt "Ubuntu Regular";')
-        self.server_response.setAlignment(Qt.AlignCenter)
-        self.server_response.setVisible(False)
+        self.window.server_response = QLabel(self.window)
+        self.window.server_response.setGeometry(QRect(270, 160, 251, 22))
+        self.window.server_response.setStyleSheet('font: 11pt "Ubuntu Regular";')
+        self.window.server_response.setAlignment(Qt.AlignCenter)
+        self.window.server_response.setVisible(False)
         # for show server_response to user after click sign_in
