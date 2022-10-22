@@ -3,7 +3,6 @@ from utils.protocol.message import Message
 
 
 class Waiter:
-
     def __init__(self, command: str):
         self.command = command
         self.event = asyncio.Event()

@@ -5,15 +5,14 @@ from utils.protocol.connection import Connection
 
 
 class Server:
-
-    def __init__(self, host: str = 'localhost', port: int = 5050):
+    def __init__(self, host: str = "localhost", port: int = 5050):
         self.host = host
         self.port = port
         self.__command_handler_map = {}
 
     async def run_server(self):
         server = await asyncio.start_server(self._handle_connection, self.host, self.port)
-        logger.info(f'Server started on {self.host}:{self.port}')
+        logger.info(f"Server started on {self.host}:{self.port}")
         async with server:
             await server.serve_forever()
 
@@ -28,4 +27,5 @@ class Server:
     def message_handler(self, method: str):
         def decorator(func):
             self.__command_handler_map[method] = func
+
         return decorator

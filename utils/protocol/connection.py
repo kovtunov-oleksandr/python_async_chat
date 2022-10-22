@@ -25,9 +25,7 @@ class Connection:
         self.writer.write(message.form_protocol().encode(self.DATA_CODING_FORMAT))
         await self.writer.drain()
 
-    async def send_message_wait_answer(
-        self, message: Message, answer_command: str = None
-    ):
+    async def send_message_wait_answer(self, message: Message, answer_command: str = None):
         if answer_command is None:
             answer_command = message.command
         waiter = await self.create_message_waiter(answer_command)
