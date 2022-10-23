@@ -1,14 +1,14 @@
 import asyncio
+import sys
 from PyQt5 import QtWidgets
 from desktop.windows.start_window import StartWindow
 
 
 async def main():
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     client = None
     start_window = StartWindow(client)
-    start_window.setup_ui()
+    start_window.setup_start_window()
     start_window.window.show()
     sys.exit(app.exec_())
 
