@@ -1,8 +1,8 @@
 class StartWindowMixin:
 
-    def return_to_start_menu(self, client, curr_window):
+    def return_to_start_window(self, client, curr_window):
         from desktop.windows.start_window import StartWindow
-        self.next_window = StartWindow(client)
-        self.next_window.setup_ui()
-        self.next_window.window.show()
+        self.start_window = StartWindow(client)
+        self.start_window.setup_start_window()
+        self.start_window.window.show()
         curr_window.close()
