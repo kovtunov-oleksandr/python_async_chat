@@ -1,9 +1,9 @@
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton
-from desktop.windows import BaseWindow, StartWindowMixin
+from desktop.windows import BaseWindowHandler, StartWindowMixin
 
 
-class SignUpWindow(BaseWindow, StartWindowMixin):
+class SignUpWindowHandler(BaseWindowHandler, StartWindowMixin):
     def click_sign_up(
         self,
         email: QLineEdit,
@@ -31,7 +31,7 @@ class SignUpWindow(BaseWindow, StartWindowMixin):
     def setup_email_input(self) -> QLineEdit:
         self.window.email_input = QLineEdit(self.window)
         self.window.email_input.setGeometry(QRect(230, 190, 320, 30))
-        self.window.email_input.setPlaceholderText("Email")
+        self.window.email_input.setPlaceholderText("Email (*optional)")
         self.window.email_input.setStyleSheet(
             "border-style: outset;\n"
             "border-color: rgb(192, 192, 192);\n"
@@ -125,8 +125,8 @@ class SignUpWindow(BaseWindow, StartWindowMixin):
         self.window.server_response.setVisible(False)
         # for show server_response to user after click sign_in
 
-    def setup_sign_up_window(self):
-        self.setup_window("Registration")
+    def setup_window(self):
+        self.setup_background("Registration")
         self.setup_title("Sign Up", 110)
         email = self.setup_email_input()
         nickname = self.setup_nickname_input()
