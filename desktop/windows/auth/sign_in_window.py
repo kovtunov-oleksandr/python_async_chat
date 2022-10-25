@@ -1,9 +1,9 @@
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton
-from desktop.windows import BaseWindow, StartWindowMixin
+from desktop.windows import BaseWindowHandler, StartWindowMixin
 
 
-class SignInWindow(BaseWindow, StartWindowMixin):
+class SignInWindowHandler(BaseWindowHandler, StartWindowMixin):
     def click_sign_in(self, nickname: QLineEdit, password: QLineEdit):
         sign_in_info = self.read_sign_in_info(nickname, password)
         # for client request
@@ -80,8 +80,8 @@ class SignInWindow(BaseWindow, StartWindowMixin):
         self.window.server_response.setVisible(False)
         # for show server_response to user after click sign_in
 
-    def setup_sign_in_window(self):
-        self.setup_window("Logging In")
+    def setup_window(self):
+        self.setup_background("Logging In")
         self.setup_title("Sign In", 110)
         nickname = self.setup_nickname_input()
         password = self.setup_password_input()
