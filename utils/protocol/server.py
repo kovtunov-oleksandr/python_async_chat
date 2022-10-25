@@ -8,6 +8,7 @@ class Server:
     def __init__(self, host: str = "localhost", port: int = 5050):
         self.host = host
         self.port = port
+        self.sessions = {}
         self.__command_handler_map = {}
 
     async def run_server(self):
