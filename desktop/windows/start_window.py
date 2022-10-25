@@ -1,19 +1,19 @@
 from PyQt5.QtCore import QRect
 from PyQt5.QtWidgets import QPushButton
-from desktop.windows import BaseWindow, StartWindowMixin
+from desktop.windows import BaseWindowHandler, StartWindowMixin
 from desktop.windows.auth import *
 
 
-class StartWindow(BaseWindow, StartWindowMixin):
+class StartWindowHandler(BaseWindowHandler, StartWindowMixin):
     def open_sign_in_menu(self):
-        sign_in_window = SignInWindow(self.client)
-        sign_in_window.setup_sign_in_window()
+        sign_in_window = SignInWindowHandler(self.client)
+        sign_in_window.setup_window()
         sign_in_window.window.show()
         self.window.close()
 
     def open_sign_up_menu(self):
-        sign_up_window = SignUpWindow(self.client)
-        sign_up_window.setup_sign_up_window()
+        sign_up_window = SignUpWindowHandler(self.client)
+        sign_up_window.setup_window()
         sign_up_window.window.show()
         self.window.close()
 
@@ -41,8 +41,8 @@ class StartWindow(BaseWindow, StartWindowMixin):
             'font: 14pt "Arial";'
         )
 
-    def setup_start_window(self):
-        self.setup_window("Start Window")
+    def setup_window(self):
+        self.setup_background("Start Window")
         self.setup_title("Welcome to BeetrootAcademy Chat!", 160)
         self.setup_sign_in_button()
         self.setup_sign_up_button()
