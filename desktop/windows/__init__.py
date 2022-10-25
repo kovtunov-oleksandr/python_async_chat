@@ -1,2 +1,2 @@
-from desktop.windows.base import BaseWindow
+from desktop.windows.base import BaseWindowHandler
 from desktop.windows.mixins import StartWindowMixin
