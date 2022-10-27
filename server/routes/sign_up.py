@@ -12,21 +12,19 @@ import json
 async def sign_up(request: Message, connection: Connection):
     content = json.loads(request.content)
     logger.info(
-        f"Sign up attempt {content.get('nickname'), content.get('password'), content.get('email')}"
+        f"Sign up attempt {content['nickname'], content['password'], content['email']}"
     )
     async with async_session() as session:
-        if is_nickname_correct(content.get("nickname")) is not True:
+        if is_nickname_correct(content["nickname"]) is not True:
             return await handle_response(
                 request.sender,
-                "NICKNAME CANNOT START WITH A SPACE "
-                + "AND MUST CONTAINS ONLY 4 TO 16 CHARACTERS OF THE ENGLISH ALPHABET",
+                "NICKNAME CANNOT START WITH A SPACE AND MUST CONTAINS ONLY 4 TO 16 CHARACTERS OF THE ENGLISH ALPHABET",
                 connection,
             )
-        if is_password_correct(content.get("password")) is not True:
+        if is_password_correct(content["password"]) is not True:
             return await handle_response(
                 request.sender,
-                "PASSWORD CANNOT START WITH A SPACE "
-                + "AND CONTAINS MORE THAN 50 CHARACTERS",
+                "PASSWORD CANNOT START WITH A SPACE AND CONTAINS MORE THAN 50 CHARACTERS",
                 connection,
             )
         result = await session.scalars(
@@ -59,9 +57,9 @@ def is_password_correct(password: str) -> bool:
 
 async def add_user_to_db(content: dict, connection: Connection):
     user = User(
-        nickname=content.get("nickname"),
-        password=content.get("password"),
-        email=content.get("email"),
+        nickname=content["nickname"],
+        password=content["password"],
+        email=content["email"],
     )
     async with async_session() as session, session.begin():
         session.add(user)
@@ -75,7 +73,7 @@ async def handle_response(
     sender: str, response_text: str, connection: Connection, content: dict = None
 ):
     response = Message(
-        "sign up", "server", sender, "_", json.dumps({"response": f"{response_text}"})
+        "sign_up", "server", sender, "_", json.dumps({"response": response_text})
     )
     if response_text == "REGISTRATION IS SUCCESSFUL":
         await add_user_to_db(content, connection)
