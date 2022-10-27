@@ -27,7 +27,7 @@ async def sign_in(message: Message, connection: Connection):
     return await connection.send_message(response)
 
 
-async def create_session(user: User, connection: Connection):
+async def create_session(user: User, connection: Connection) -> str:
     token = secrets.token_hex(32)
     user_session = UserSession(user_id=user.id, token=token)
     async with async_session() as session, session.begin():
