@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
-
 from server.config import engine
 from server.models.user import Base
+from server.models.session import UserSession  # noqa
 
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
