@@ -14,8 +14,7 @@ async def sign_in(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     logger.info(f"Sign in attempt {content.get('nickname')}, {content.get('password')}")
     async with async_session() as session:
-        result = await session.scalars(select(User).where(User.nickname == content["nickname"]))
-        user = result.first()
+        user = await session.scalar(select(User).where(User.nickname == content.get('password')))
     if user is not None and user.password == content.get("password"):
         token = await create_session(user, connection)
         response = Message("sign_in", "server", message.sender, token, '{"response": "SUCCESSFULLY LOGGED IN"}')
