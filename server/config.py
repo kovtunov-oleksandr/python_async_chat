@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from utils.protocol.server import Server
 
 
-DATABASE_URL = "sqlite+aiosqlite:///C:/Users/k3nz0/PycharmProjects/python_async_chat/server/server_utils/database.db"
+DATABASE_URL = "sqlite+aiosqlite:///database.db"
 engine = create_async_engine(DATABASE_URL, echo=False)
 
 HOST = "localhost"
