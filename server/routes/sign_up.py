@@ -12,9 +12,9 @@ import json
 async def sign_up(request: Message, connection: Connection):
     content = json.loads(request.content)
     logger.info(
-        f"Sign up attempt {content['nickname'], content['password'], content['email']}"
+        f"Sign up attempt {content.get('nickname'), content.get('password'), content.get('email')}"
     )
-    credentials = check_nickname_password_credentials(content["nickname"], content["password"])
+    credentials = check_nickname_password_credentials(content.get("nickname"), content.get("password"))
     if next(credentials) is not True:
         return await handle_response(
             request.sender,
@@ -59,7 +59,7 @@ async def add_user_to_db(content: dict, connection: Connection):
     user = User(
         nickname=content["nickname"],
         password=content["password"],
-        email=content["email"],
+        email=content.get("email"),
     )
     async with async_session() as session, session.begin():
         session.add(user)
