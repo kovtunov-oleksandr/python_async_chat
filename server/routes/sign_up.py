@@ -14,24 +14,24 @@ async def sign_up(request: Message, connection: Connection):
     logger.info(
         f"Sign up attempt {content['nickname'], content['password'], content['email']}"
     )
+    credentials = check_nickname_password_credentials(content["nickname"], content["password"])
+    if next(credentials) is not True:
+        return await handle_response(
+            request.sender,
+            "NICKNAME CANNOT START WITH A SPACE AND MUST CONTAINS ONLY 4 TO 16 CHARACTERS OF THE ENGLISH ALPHABET",
+            connection,
+        )
+    if next(credentials) is not True:
+        return await handle_response(
+            request.sender,
+            "PASSWORD CANNOT START WITH A SPACE AND CONTAINS MORE THAN 50 CHARACTERS",
+            connection,
+        )
     async with async_session() as session:
-        if is_nickname_correct(content["nickname"]) is not True:
-            return await handle_response(
-                request.sender,
-                "NICKNAME CANNOT START WITH A SPACE AND MUST CONTAINS ONLY 4 TO 16 CHARACTERS OF THE ENGLISH ALPHABET",
-                connection,
-            )
-        if is_password_correct(content["password"]) is not True:
-            return await handle_response(
-                request.sender,
-                "PASSWORD CANNOT START WITH A SPACE AND CONTAINS MORE THAN 50 CHARACTERS",
-                connection,
-            )
-        result = await session.scalars(
+        is_nickname_in_db = await session.scalar(
             select(User).where(User.nickname == content["nickname"])
         )
-        user = result.first()
-        if user is not None:
+        if is_nickname_in_db is not None:
             return await handle_response(
                 request.sender, "THIS LOGIN IS NOT UNIQUE", connection
             )
@@ -41,18 +41,18 @@ async def sign_up(request: Message, connection: Connection):
             )
 
 
-def is_nickname_correct(nickname: str) -> bool:
+def check_nickname_password_credentials(nickname: str, password: str):
     if (
-        4 <= len(nickname) <= 16
-        and (nickname.isascii() is True and nickname.isalpha() is True)
-        and nickname[0] != " "
+            4 <= len(nickname) <= 16
+            and (nickname.isascii() is True and nickname.isalpha() is True)
+            and nickname[0] != " "
     ):
-        return True
-
-
-def is_password_correct(password: str) -> bool:
+        yield True
+    else:
+        yield False
     if len(password) <= 50 and password.isascii() is True and password[0] != " ":
-        return True
+        yield True
+    yield False
 
 
 async def add_user_to_db(content: dict, connection: Connection):
@@ -63,7 +63,6 @@ async def add_user_to_db(content: dict, connection: Connection):
     )
     async with async_session() as session, session.begin():
         session.add(user)
-        session.commit()
     logger.info(
         f"New user was registered: <{user.nickname}>, connection: {connection.writer.get_extra_info('peername')}"
     )
