@@ -29,7 +29,7 @@ async def sign_up(request: Message, connection: Connection):
         )
     async with async_session() as session:
         is_nickname_in_db = await session.scalar(
-            select(User).where(User.nickname == content["nickname"])
+            select(User).where(User.nickname == content.get("nickname"))
         )
         if is_nickname_in_db is not None:
             return await handle_response(
@@ -57,8 +57,8 @@ def check_nickname_password_credentials(nickname: str, password: str):
 
 async def add_user_to_db(content: dict, connection: Connection):
     user = User(
-        nickname=content["nickname"],
-        password=content["password"],
+        nickname=content.get("nickname"),
+        password=content.get("password"),
         email=content.get("email"),
     )
     async with async_session() as session, session.begin():
