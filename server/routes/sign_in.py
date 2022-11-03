@@ -12,15 +12,25 @@ async def sign_in(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     logger.info(f"Sign in attempt {content.get('nickname')}, {content.get('password')}")
     async with async_session() as session, session.begin():
-        user = await session.scalar(select(User).where(User.nickname == content.get('nickname')))
+        user = await session.scalar(select(User).where(User.nickname == content.get("nickname")))
         if user is not None and user.password == content.get("password"):
             token = await create_session(session, user, connection)
-            response = Message("sign_in", "server", "client", token, Message.decode_content_to_json({"response": "SUCCESSFULLY LOGGED IN"}))
+            response = Message(
+                "sign_in",
+                "server",
+                "client",
+                token,
+                Message.decode_content_to_json({"response": "SUCCESSFULLY LOGGED IN"}),
+            )
             return await connection.send_message(response)
         elif user is not None and user.password != content.get("password"):
-            response = Message("sign_in", "server", "client", "_", Message.decode_content_to_json({"response": "INCORRECT PASSWORD"}))
+            response = Message(
+                "sign_in", "server", "client", "_", Message.decode_content_to_json({"response": "INCORRECT PASSWORD"})
+            )
             return await connection.send_message(response)
-        response = Message("sign_in", "server", "client", "_", Message.decode_content_to_json({"response": "USER NOT FOUND"}))
+        response = Message(
+            "sign_in", "server", "client", "_", Message.decode_content_to_json({"response": "USER NOT FOUND"})
+        )
         return await connection.send_message(response)
 
 

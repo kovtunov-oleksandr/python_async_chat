@@ -22,5 +22,5 @@ class Message:
         return json.loads(self.content)
 
     @classmethod
-    def decode_content_to_json(self, content) -> str:
+    def decode_content_to_json(cls, content) -> str:
         return json.dumps(content)
