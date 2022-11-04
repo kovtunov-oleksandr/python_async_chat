@@ -14,7 +14,9 @@ async def create_chat(message: Message, connection: Connection):
     async with async_session() as session, session.begin():
         chat = await session.scalar(select(Chat).where(Chat.chat_name == chat_name))
     if chat is not None:
-        response = Message("create_chat", "server", "_", "_", '{"response": "Chat name is not unique"}')
+        response = Message(
+            "create_chat", "server", "_", "_", Message.decode_content_to_json('{"response": "Chat name is not unique"}')
+        )
     else:
         chat = Chat(chat_name=chat_name, creator_id=user_id, type=chat_type)
         session.add(chat)
@@ -26,6 +28,8 @@ async def create_chat(message: Message, connection: Connection):
             "server",
             "_",
             "_",
-            f'{"response": "Сhat was created", "chat_id": {chat.id}, "chat_name":{chat_name}}',
+            Message.decode_content_to_json(
+                f'{"response": "Сhat was created", "chat_id": {chat.id}, "chat_name":{chat_name}}'
+            ),
         )
     return await connection.send_message(response)
