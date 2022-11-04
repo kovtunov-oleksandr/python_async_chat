@@ -1,4 +1,3 @@
-import json
 from sqlalchemy.future import select
 from server.config import server
 from server.server_utils.db_utils import async_session
@@ -8,8 +7,8 @@ from utils.logger import logger
 
 
 @server.message_handler("sign_up")
-async def sign_up(request: Message, connection: Connection):
-    content = json.loads(request.content)
+async def sign_up(message: Message, connection: Connection):
+    content = message.encode_content_from_json()
     logger.info(
         f"Sign up attempt {content.get('nickname'), content.get('password'), content.get('email')}"
     )
@@ -71,7 +70,7 @@ async def handle_response(
     content: dict = None,
 ):
     response = Message(
-        "sign_up", "server", "client", "_", json.dumps({"response": response_text})
+        "sign_up", "server", "client", "_", Message.decode_content_to_json({"response": response_text})
     )
     if response_text == "REGISTRATION IS SUCCESSFUL":
         await add_user_to_db(content, session, connection)
