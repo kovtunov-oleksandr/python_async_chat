@@ -1,6 +1,5 @@
 from utils.protocol import Client
 from utils.protocol.message import Message
-import json
 
 
 class ChatClient(Client):
