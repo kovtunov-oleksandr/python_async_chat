@@ -11,5 +11,6 @@ class ChatClient(Client):
         await self.send_message(message)
 
     async def create_chat(self, data: dict):
-        message = Message("create_chat", "client", "server", "_", Message.decode_content_to_json(data))
+        data["user_id"] = self.user_id
+        message = Message("create_chat", "client", "server", self.token, Message.decode_content_to_json(data))
         await self.send_message(message)
