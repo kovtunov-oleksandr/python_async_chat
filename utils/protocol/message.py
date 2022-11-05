@@ -20,3 +20,7 @@ class Message:
 
     def encode_content_from_json(self) -> dict:
         return json.loads(self.content)
+
+    @classmethod
+    def decode_content_to_json(cls, content) -> str:
+        return json.dumps(content)
