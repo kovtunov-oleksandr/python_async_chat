@@ -10,7 +10,6 @@ from utils.protocol import Message, Connection
 async def create_chat(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     chat_name, user_id, chat_type = map(lambda x: content.get(x), ("chat_name", "user_id", "chat_type"))
-    print(chat_name, user_id, chat_type)
     logger.info(f"Attempt to create chat {chat_name}")
     async with async_session() as session, session.begin():
         chat = await session.scalar(select(Chat).where(Chat.chat_name == chat_name))
@@ -34,7 +33,7 @@ async def create_chat(message: Message, connection: Connection):
                 "client",
                 "_",
                 Message.decode_content_to_json(
-                    {"response": "CHAT WAS CREATED", "chat_id": f"{chat.id}", "chat_name": f"{chat_name}"}
+                    {"response": "CHAT WAS CREATED", "chat_id": chat.id, "chat_name": chat_name}
                 ),
             )
         return await connection.send_message(response)
