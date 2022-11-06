@@ -22,10 +22,32 @@ class Server:
             await self._get_handler(message, connection)
 
     async def _get_handler(self, message: Message, connection: Connection):
-        await self.__command_handler_map[message.command](message, connection)
+        if await self.check_user_session(message, connection):
+            await self.__command_handler_map[message.command](message, connection)
 
     def message_handler(self, method: str):
         def decorator(func):
             self.__command_handler_map[method] = func
 
         return decorator
+
+    async def check_user_session(self, message: Message, connection: Connection) -> bool:
+        if message.command not in ["sign_up", "sign_in"]:
+            logger.info("Checking user token auth")
+            content = message.encode_content_from_json()
+            user_id = content.get("user_id")
+            if user_id not in self.sessions or self.sessions.get(user_id).get("user_session") is None:
+                response = {"response": "ERROR: NO SUCH USER SESSION"}
+                await connection.send_message(
+                    Message(message.command, "server", "client", "_", Message.decode_content_to_json(response))
+                )
+                return False
+            user_session = self.sessions.get(user_id).get("user_session")
+            if user_session.token != message.token:
+                response = {"response": "USER SESSION ERROR: TOKEN AUTH FAIL"}
+                await connection.send_message(
+                    Message(message.command, "server", "client", "_", Message.decode_content_to_json(response))
+                )
+                return False
+        logger.info("Token auth check successful")
+        return True
