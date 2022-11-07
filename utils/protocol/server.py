@@ -1,13 +1,13 @@
 import asyncio
 from utils.logger import logger
-from utils.protocol.message import Message
-from utils.protocol.connection import Connection
+from utils.protocol import Message, Connection
 
 
 class Server:
     def __init__(self, host: str = "localhost", port: int = 5050):
         self.host = host
         self.port = port
+        self.sessions = {}
         self.__command_handler_map = {}
 
     async def run_server(self):
