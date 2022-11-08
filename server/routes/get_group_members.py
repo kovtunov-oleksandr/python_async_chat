@@ -9,20 +9,20 @@ from utils.protocol import Message, Connection
 @server.message_handler("get_group_members")
 async def get_group_members(message: Message, connection: Connection):
     content = message.encode_content_from_json()
-    chat_name = content.get("chat_name")
-    logger.info(f"Attempt to get chat members from {chat_name} chat")
+    chat_id = content.get("chat_id")
+    logger.info(f"Attempt to get chat members from chat id={chat_id} ")
     async with async_session() as session, session.begin():
-        chat = await session.scalar(select(Chat).where(Chat.chat_name == chat_name))
+        chat = await session.scalar(select(Chat).where(Chat.id == chat_id))
         if chat is None:
             response = Message(
                 "create_chat",
                 "server",
                 "client",
                 "_",
-                Message.decode_content_to_json({"response": f"WE DID NOT HAVE CHAT WITH NAME {chat_name}"}),
+                Message.decode_content_to_json({"response": f"THERE IS NO CHAT WITH ID {chat_id}"}),
             )
         else:
-            chat_members = await session.scalars(select(ChatMember).where(ChatMember.chat_id == chat.id))
+            chat_members = await session.scalars(select(ChatMember).where(ChatMember.chat_id == chat_id))
             users_id = [chat_member.user_id for chat_member in chat_members]
             users = await session.scalars(select(User).where(User.id.in_(users_id)))
             users_in_chat = [{"nickname": user.nickname, "id": user.id} for user in users]
