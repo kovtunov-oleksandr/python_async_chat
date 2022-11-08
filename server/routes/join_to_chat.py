@@ -14,7 +14,7 @@ async def join_to_chat(message: Message, connection: Connection):
     )
     logger.info(f"Attempt to join to chat from {user_id}, {chat_id}")
     async with async_session() as session, session.begin():
-        chat = await session.scalar(select(Chat).where(Chat.chat_id == chat_id))
+        chat = await session.scalar(select(Chat).where(Chat.id == chat_id))
         if chat is None:
             response = Message(
                 "join_to_chat",
@@ -51,7 +51,7 @@ async def join_to_chat(message: Message, connection: Connection):
                         {
                             "response": "YOU JOINED THE CHAT",
                             "chat_id": chat.id,
-                            "chat_name": chat.name,
+                            "chat_name": chat.chat_name,
                         }
                     ),
                 )
