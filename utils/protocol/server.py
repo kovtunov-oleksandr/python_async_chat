@@ -36,7 +36,7 @@ class Server:
             logger.info("Checking user token auth")
             content = message.encode_content_from_json()
             user_id = content.get("user_id")
-            if user_id not in self.sessions or self.sessions.get(user_id).get("user_session") is None:
+            if user_id not in self.sessions:
                 response = {"response": "ERROR: NO SUCH USER SESSION"}
                 await connection.send_message(
                     Message(message.command, "server", "client", "_", Message.decode_content_to_json(response))
