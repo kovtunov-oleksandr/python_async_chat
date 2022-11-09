@@ -20,7 +20,6 @@ async def get_group_members(message: Message, connection: Connection):
                 Message.decode_content_to_json({"response": f"THERE IS NO CHAT"}),
             )
         else:
-            chats = await session.scalars(select(Chat).where(Chat.type == 1))
             chats = [{"chat_name": chat.chat_name, "id": chat.id} for chat in chats]
             response = Message(
                 "create_chat",
