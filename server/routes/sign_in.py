@@ -20,7 +20,9 @@ async def sign_in(message: Message, connection: Connection):
                 "server",
                 "client",
                 token,
-                Message.decode_content_to_json({"response": "SUCCESSFULLY LOGGED IN"}),
+                Message.decode_content_to_json(
+                    {"response": "SUCCESSFULLY LOGGED IN", "nickname": user.nickname, "user_id": user.id}
+                ),
             )
             return await connection.send_message(response)
         elif user is not None and user.password != content.get("password"):
