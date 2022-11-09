@@ -27,5 +27,5 @@ class SignUP(enum.Enum):
 
 class Token(enum.Enum):
 
-    WORKING_TOKEN_LENGTH = 128
+    VALID_TOKEN_LENGTH = 128
     EMPTY_TOKEN_LENGTH = 1

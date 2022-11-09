@@ -27,10 +27,8 @@ def event_loop():
 def count_routes() -> int:
     dir_path = r'C:/Users/k3nz0/PycharmProjects/python_async_chat/server/routes'
     count = -1
-    # Iterate directory
     for path in os.listdir(dir_path):
-        # check if current path is a file
-        if os.path.isfile(os.path.join(dir_path, path)):
+        if os.path.isfile(os.path.join(dir_path, path)) and os.path.basename(os.path.join(dir_path, path)) != "__init__.py":
             count += 1
     return count
 
