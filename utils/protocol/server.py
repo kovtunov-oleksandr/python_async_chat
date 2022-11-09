@@ -29,3 +29,7 @@ class Server:
             self.__command_handler_map[method] = func
 
         return decorator
+
+    @property
+    def command_handler_map(self):
+        return self.__command_handler_map
