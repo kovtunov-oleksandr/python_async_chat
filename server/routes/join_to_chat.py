@@ -12,7 +12,9 @@ async def join_to_chat(message: Message, connection: Connection):
     chat_id, user_id, permission = map(
         lambda x: content.get(x), ("chat_id", "user_id", "permission")
     )
-    logger.info(f"Attempt to join to chat from {user_id}, {chat_id}")
+    logger.info(
+        f"Attempt to join user (user_id: {user_id}) to chat (chat_id: {chat_id})"
+    )
     async with async_session() as session, session.begin():
         chat = await session.scalar(select(Chat).where(Chat.id == chat_id))
         if chat is None:
@@ -26,8 +28,12 @@ async def join_to_chat(message: Message, connection: Connection):
                 ),
             )
         else:
-            result = await session.scalar(select(ChatMember).where(ChatMember.user_id == user_id))
-            if result is not None:
+            member_in_chat = await session.scalar(
+                select(ChatMember).where(
+                    ChatMember.user_id == user_id and ChatMember.chat_id == chat.id
+                )
+            )
+            if member_in_chat is not None:
                 response = Message(
                     "join_to_chat",
                     "server",
@@ -56,7 +62,7 @@ async def join_to_chat(message: Message, connection: Connection):
                     ),
                 )
                 logger.info(
-                    f"User was added to chat: <{user_id}> - <{chat_id}>, "
+                    f"User (user_id: {user_id} was added to chat (chat_id: {chat.id}), "
                     + f"connection: {connection.writer.get_extra_info('peername')}"
                 )
     return await connection.send_message(response)
