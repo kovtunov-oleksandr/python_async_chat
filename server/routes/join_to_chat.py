@@ -6,12 +6,10 @@ from utils.protocol import Message, Connection
 from utils.logger import logger
 
 
-@server.message_handler("join_to_chat")
-async def join_to_chat(message: Message, connection: Connection):
+@server.message_handler("join_to_group_chat")
+async def join_to_group_chat(message: Message, connection: Connection):
     content = message.encode_content_from_json()
-    chat_id, user_id, permission = map(
-        lambda x: content.get(x), ("chat_id", "user_id", "permission")
-    )
+    chat_id, user_id = content.get("chat_id"), content.get("user_id")
     logger.info(
         f"Attempt to join user (user_id: {user_id}) to chat (chat_id: {chat_id})"
     )
@@ -45,7 +43,7 @@ async def join_to_chat(message: Message, connection: Connection):
                 )
             else:
                 chat_member = ChatMember(
-                    user_id=user_id, chat_id=chat_id, permissions=permission
+                    user_id=user_id, chat_id=chat_id, permissions=0
                 )
                 session.add(chat_member)
                 response = Message(
