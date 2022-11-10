@@ -1,23 +1,37 @@
 import enum
 
 
+class Misc:
+
+    CLIENT = "client"
+    SERVER = "server"
+
+
+class Commands(enum.Enum):
+
+    SIGN_IN = "sign_in"
+    SIGN_UP = "sign_up"
+    CREATE_CHAT = "create_chat"
+
+
 class SignIn(enum.Enum):
 
-    GET_EXISTING_USER = 'sign_in;;sender;;receiver;;token;;{"nickname": "admin", "password": "admin"}'
-    GET_NON_EXISTING_USER = 'sign_in;;sender;;receiver;;token;;{"nickname": "NOTEXISTINGUSER", "password": "NOTEXISTINGPW"}'
-    GET_EXISTING_USER_WRONG_PW = 'sign_in;;sender;;receiver;;token;;{"nickname": "admin", "password": "WRONG_PW"}'
+    EXISTING_USER = "admin"
+    EXISTING_PW = "adminadmin"
+    NOT_EXISTING_USER = "NOTEXISTINGUSER"
+    WRONG_PW = "WRONG_PW"
 
-    RESPONSE_CONTENT_EXISTING_USER = "SUCCESSFULLY LOGGED IN"
-    RESPONSE_CONTENT_NON_EXISTING_USER = "USER NOT FOUND"
-    RESPONSE_CONTENT_EXISTING_USER_WRONG_PW = "INCORRECT PASSWORD"
+    RESPONSE_SUCCESSFULL_LOGIN = "SUCCESSFULLY LOGGED IN"
+    RESPONSE_USER_NOT_FOUND = "USER NOT FOUND"
+    RESPONSE_INCORRECT_PW = "INCORRECT PASSWORD"
 
 
 class SignUP(enum.Enum):
 
-    SIGNUP_EXISTING_USER = 'sign_up;;sender;;receiver;;token;;{"nickname": "admin", "password": "admin"}'
-    SIGNUP_NON_EXISTING_USER = 'sign_up;;sender;;receiver;;token;;{"nickname": "NOTEXISTINGUSER", "password": "NOTEXISTINGPW"}'
-    SIGNUP_INCORRECT_PW = 'sign_up;;sender;;receiver;;token;;{"nickname": "NOTEXISTINGUSER", "password": " T"}'
-    SIGNUP_INCORRECT_LOGIN = 'sign_up;;sender;;receiver;;token;;{"nickname": "_", "password": "WRONG_PW"}'
+    NEW_USER = "admin"
+    CORRECT_PW = "adminadmin"
+    INCORRECT_PW = " INCORRECT_PW"
+    INCORRECT_LOGIN = " INCORRECT_LOGIN"
 
     RESPONSE_CONTENT_USER_EXISTS = "THIS LOGIN IS NOT UNIQUE"
     RESPONSE_CONTENT_SUCCESSFUL_SIGNUP = "REGISTRATION IS SUCCESSFUL"
@@ -29,3 +43,17 @@ class Token(enum.Enum):
 
     VALID_TOKEN_LENGTH = 128
     EMPTY_TOKEN_LENGTH = 1
+    EMPTY_TOKEN = "_"
+
+    RESPONSE_NO_USER_IN_SESSION = "ERROR: NO SUCH USER SESSION"
+    RESPONSE_TOKEN_AUTH_FAIL = "USER SESSION ERROR: TOKEN AUTH FAIL"
+
+
+class Chat(enum.Enum):
+
+    NAME = "TEST_CHAT"
+    GROUP_CHAT_TYPE = 1
+
+    RESPONSE_CHAT_CREATED = "CHAT WAS CREATED"
+    RESPONSE_CHAT_NAME_EXISTS = "CHAT NAME IS NOT UNIQUE"
+

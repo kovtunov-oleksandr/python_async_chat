@@ -18,7 +18,7 @@ class Client:
             message
 
     async def send_message(self, message: Message):
-        return self.connection.send_message_wait_answer(message)
+        await self.connection.send_message_wait_answer(message)  # TODO: check
 
     async def quick_start(self):
         await self.connect()
