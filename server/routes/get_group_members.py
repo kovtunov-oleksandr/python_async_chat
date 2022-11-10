@@ -15,7 +15,7 @@ async def get_group_members(message: Message, connection: Connection):
         chat = await session.scalar(select(Chat).where(Chat.id == chat_id))
         if chat is None:
             response = Message(
-                "create_chat",
+                "get_group_members",
                 "server",
                 "client",
                 "_",
@@ -27,7 +27,7 @@ async def get_group_members(message: Message, connection: Connection):
             users = await session.scalars(select(User).where(User.id.in_(users_id)))
             users_in_chat = [{"nickname": user.nickname, "id": user.id} for user in users]
             response = Message(
-                "create_chat",
+                "get_group_members",
                 "server",
                 "client",
                 "_",
