@@ -1,5 +1,6 @@
 import asyncio
-from utils.protocol import Connection, Message
+from utils.protocol.message import Message
+from utils.protocol.connection import Connection
 
 
 class Client:
