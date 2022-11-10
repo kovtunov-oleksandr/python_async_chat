@@ -17,7 +17,7 @@ async def join_to_group_chat(message: Message, connection: Connection):
         chat = await session.scalar(select(Chat).where(Chat.id == chat_id))
         if chat is None:
             response = Message(
-                "join_to_chat",
+                "join_to_group_chat",
                 "server",
                 "client",
                 "_",
@@ -28,12 +28,12 @@ async def join_to_group_chat(message: Message, connection: Connection):
         else:
             member_in_chat = await session.scalar(
                 select(ChatMember).where(
-                    ChatMember.user_id == user_id and ChatMember.chat_id == chat.id
+                    ChatMember.user_id == user_id, ChatMember.chat_id == chat.id
                 )
             )
             if member_in_chat is not None:
                 response = Message(
-                    "join_to_chat",
+                    "join_to_group_chat",
                     "server",
                     "client",
                     "_",
@@ -47,7 +47,7 @@ async def join_to_group_chat(message: Message, connection: Connection):
                 )
                 session.add(chat_member)
                 response = Message(
-                    "join_to_chat",
+                    "join_to_group_chat",
                     "server",
                     "client",
                     "_",
