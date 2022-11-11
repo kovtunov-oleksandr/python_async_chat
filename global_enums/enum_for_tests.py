@@ -1,7 +1,7 @@
 import enum
 
 
-class Misc:
+class Misc(enum.Enum):
 
     CLIENT = "client"
     SERVER = "server"

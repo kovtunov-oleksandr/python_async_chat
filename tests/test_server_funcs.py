@@ -107,3 +107,4 @@ async def test_create_chat(test_client,chat_name, expected_response):
     assert message.sender == receiver
     assert message.receiver == sender
     assert content.get("response") == expected_response
+
