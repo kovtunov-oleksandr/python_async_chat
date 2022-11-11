@@ -29,9 +29,9 @@ async def test_client(recreate_db):
     return client
 
 
-# # TODO: Real chat client (not working atm)
+# TODO: Real chat client (not working atm)
 # @pytest_asyncio.fixture(scope="module")
-# async def test_client():
+# async def test_client(recreate_db):
 #     client = ChatClient("localhost", 5050)
 #     asyncio.create_task(client.quick_start())
 #     return client
