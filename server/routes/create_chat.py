@@ -36,4 +36,4 @@ async def create_chat(message: Message, connection: Connection):
                     {"response": "CHAT WAS CREATED", "chat_id": chat.id, "chat_name": chat_name}
                 ),
             )
-        return await connection.send_message(response)
+    return await connection.send_message(response)
