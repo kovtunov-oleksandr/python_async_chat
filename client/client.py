@@ -19,3 +19,12 @@ class ChatClient(Client):
         data["user_id"] = self.user_id
         message = Message("join_to_group_chat", "client", "server", self.token, Message.decode_content_to_json(data))
         await self.send_message(message)
+
+    async def get_group_members(self, data: dict):
+        message = Message("get_group_members", "client", "server", self.token, Message.decode_content_to_json(data))
+        await self.send_message(message)
+
+    async def get_all_groups(self, data: dict):
+        data["user_id"] = self.user_id
+        message = Message("get_all_groups", "client", "server", self.token, Message.decode_content_to_json(data))
+        await self.send_message(message)
