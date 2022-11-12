@@ -4,9 +4,10 @@ from server.server_utils.db_utils import async_session
 from server.models import Chat, ChatMember
 from utils.protocol import Message, Connection
 from utils.logger import logger
+from global_enums import Protocol, JoinGroup
 
 
-@server.message_handler("join_to_group_chat")
+@server.message_handler(JoinGroup.COMMAND.value)
 async def join_to_group_chat(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     chat_id, user_id = content.get("chat_id"), content.get("user_id")
@@ -17,12 +18,12 @@ async def join_to_group_chat(message: Message, connection: Connection):
         chat = await session.scalar(select(Chat).where(Chat.id == chat_id))
         if chat is None:
             response = Message(
-                "join_to_group_chat",
-                "server",
-                "client",
-                "_",
+                JoinGroup.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
                 Message.decode_content_to_json(
-                    {"response": "THIS CHAT DOES NOT EXIST"}
+                    {"response": JoinGroup.RESPONSE_CHAT_NOT_FOUND.value}
                 ),
             )
         else:
@@ -33,12 +34,12 @@ async def join_to_group_chat(message: Message, connection: Connection):
             )
             if member_in_chat is not None:
                 response = Message(
-                    "join_to_group_chat",
-                    "server",
-                    "client",
-                    "_",
+                    JoinGroup.COMMAND.value,
+                    Protocol.SERVER.value,
+                    Protocol.CLIENT.value,
+                    Protocol.EMPTY_TOKEN.value,
                     Message.decode_content_to_json(
-                        {"response": "YOU ARE ALREADY IN THIS CHAT"}
+                        {"response": JoinGroup.RESPONSE_ALREADY_IN_CHAT.value}
                     ),
                 )
             else:
@@ -47,13 +48,13 @@ async def join_to_group_chat(message: Message, connection: Connection):
                 )
                 session.add(chat_member)
                 response = Message(
-                    "join_to_group_chat",
-                    "server",
-                    "client",
-                    "_",
+                    JoinGroup.COMMAND.value,
+                    Protocol.SERVER.value,
+                    Protocol.CLIENT.value,
+                    Protocol.EMPTY_TOKEN.value,
                     Message.decode_content_to_json(
                         {
-                            "response": "YOU JOINED THE CHAT",
+                            "response": JoinGroup.RESPONSE_CHAT_JOINED.value,
                             "chat_id": chat.id,
                             "chat_name": chat.chat_name,
                         }

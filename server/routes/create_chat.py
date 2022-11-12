@@ -4,9 +4,10 @@ from server.server_utils.db_utils import async_session
 from server.config import server
 from utils.logger import logger
 from utils.protocol import Message, Connection
+from global_enums import Protocol, CreateChat
 
 
-@server.message_handler("create_chat")
+@server.message_handler(CreateChat.COMMAND.value)
 async def create_chat(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     chat_name, user_id, chat_type = map(lambda x: content.get(x), ("chat_name", "user_id", "chat_type"))
@@ -15,11 +16,11 @@ async def create_chat(message: Message, connection: Connection):
         chat = await session.scalar(select(Chat).where(Chat.chat_name == chat_name))
         if chat is not None:
             response = Message(
-                "create_chat",
-                "server",
-                "client",
-                "_",
-                Message.decode_content_to_json({"response": "CHAT NAME IS NOT UNIQUE"}),
+                CreateChat.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
+                Message.decode_content_to_json({"response": CreateChat.RESPONSE_CHAT_NAME_EXISTS.value}),
             )
         else:
             chat = Chat(chat_name=chat_name, creator_id=user_id, type=chat_type)
@@ -28,12 +29,12 @@ async def create_chat(message: Message, connection: Connection):
             chat_member = ChatMember(user_id=user_id, chat_id=chat.id, permissions=1)
             session.add(chat_member)
             response = Message(
-                "create_chat",
-                "server",
-                "client",
-                "_",
+                CreateChat.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
                 Message.decode_content_to_json(
-                    {"response": "CHAT WAS CREATED", "chat_id": chat.id, "chat_name": chat_name}
+                    {"response": CreateChat.RESPONSE_CHAT_CREATED.value, "chat_id": chat.id, "chat_name": chat_name}
                 ),
             )
     return await connection.send_message(response)
