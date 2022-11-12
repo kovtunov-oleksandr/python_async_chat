@@ -1,16 +1,16 @@
 import asyncio
-from utils.protocol.message import Message
 from utils.protocol.connection import Connection
+from utils.protocol.message import Message
 
 
 class Client:
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.nickname = None
-        self.token = None
-        self.user_id = None
         self.connection = None
+        self.nickname = None
+        self.user_id = None
+        self.token = None
 
     async def connect(self):
         reader, writer = await asyncio.open_connection(self.host, self.port)
@@ -37,3 +37,6 @@ class Client:
             self.nickname = content["nickname"]
             self.user_id = content["user_id"]
         return message
+
+    async def disconnect(self):
+        await self.connection.disconnect()

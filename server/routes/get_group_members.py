@@ -4,9 +4,10 @@ from server.server_utils.db_utils import async_session
 from server.config import server
 from utils.logger import logger
 from utils.protocol import Message, Connection
+from global_enums import Protocol, GetMembers
 
 
-@server.message_handler("get_group_members")
+@server.message_handler(GetMembers.COMMAND.value)
 async def get_group_members(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     chat_id = content.get("chat_id")
@@ -15,11 +16,11 @@ async def get_group_members(message: Message, connection: Connection):
         chat = await session.scalar(select(Chat).where(Chat.id == chat_id))
         if chat is None:
             response = Message(
-                "create_chat",
-                "server",
-                "client",
-                "_",
-                Message.decode_content_to_json({"response": f"THERE IS NO CHAT WITH ID {chat_id}"}),
+                GetMembers.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
+                Message.decode_content_to_json({"response": f"{GetMembers.RESPONSE_CHAT_NOT_FOUND.value} {chat_id}"}),
             )
         else:
             chat_members = await session.scalars(select(ChatMember).where(ChatMember.chat_id == chat_id))
@@ -27,10 +28,12 @@ async def get_group_members(message: Message, connection: Connection):
             users = await session.scalars(select(User).where(User.id.in_(users_id)))
             users_in_chat = [{"nickname": user.nickname, "id": user.id} for user in users]
             response = Message(
-                "create_chat",
-                "server",
-                "client",
-                "_",
-                Message.decode_content_to_json({"response": "LIST OF MEMBERS RECEIVED", "users": users_in_chat}),
+                GetMembers.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
+                Message.decode_content_to_json(
+                    {"response": GetMembers.RESPONSE_LIST_RETRIEVED.value, "users": users_in_chat}
+                ),
             )
         return await connection.send_message(response)
