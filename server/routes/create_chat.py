@@ -26,7 +26,7 @@ async def create_chat(message: Message, connection: Connection):
             chat = Chat(chat_name=chat_name, creator_id=user_id, type=chat_type)
             session.add(chat)
             await session.flush()
-            chat_member = ChatMember(user_id=user_id, chat_id=chat.id, permissions=1)
+            chat_member = ChatMember(user_id=user_id, chat_id=chat.id, permissions=CreateChat.ADMIN.value)
             session.add(chat_member)
             response = Message(
                 CreateChat.COMMAND.value,
