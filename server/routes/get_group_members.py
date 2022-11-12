@@ -32,6 +32,8 @@ async def get_group_members(message: Message, connection: Connection):
                 Protocol.SERVER.value,
                 Protocol.CLIENT.value,
                 Protocol.EMPTY_TOKEN.value,
-                Message.decode_content_to_json({"response": GetMembers.RESPONSE_LIST_RETRIEVED.value, "users": users_in_chat}),
+                Message.decode_content_to_json(
+                    {"response": GetMembers.RESPONSE_LIST_RETRIEVED.value, "users": users_in_chat}
+                ),
             )
         return await connection.send_message(response)

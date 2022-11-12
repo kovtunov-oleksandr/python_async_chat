@@ -22,17 +22,29 @@ async def sign_in(message: Message, connection: Connection):
                 Protocol.CLIENT.value,
                 token,
                 Message.decode_content_to_json(
-                    {"response": SignIn.RESPONSE_SIGN_IN_SUCCESSFUL.value, "nickname": user.nickname, "user_id": user.id}
+                    {
+                        "response": SignIn.RESPONSE_SIGN_IN_SUCCESSFUL.value,
+                        "nickname": user.nickname,
+                        "user_id": user.id,
+                    }
                 ),
             )
             return await connection.send_message(response)
         elif user is not None and user.password != content.get("password"):
             response = Message(
-                SignIn.COMMAND.value, Protocol.SERVER.value, Protocol.CLIENT.value, Protocol.EMPTY_TOKEN.value, Message.decode_content_to_json({"response": SignIn.RESPONSE_INCORRECT_PASSWORD.value})
+                SignIn.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
+                Message.decode_content_to_json({"response": SignIn.RESPONSE_INCORRECT_PASSWORD.value}),
             )
             return await connection.send_message(response)
         response = Message(
-            SignIn.COMMAND.value, Protocol.SERVER.value, Protocol.CLIENT.value, Protocol.EMPTY_TOKEN.value, Message.decode_content_to_json({"response": SignIn.RESPONSE_USER_NOT_FOUND.value})
+            SignIn.COMMAND.value,
+            Protocol.SERVER.value,
+            Protocol.CLIENT.value,
+            Protocol.EMPTY_TOKEN.value,
+            Message.decode_content_to_json({"response": SignIn.RESPONSE_USER_NOT_FOUND.value}),
         )
         return await connection.send_message(response)
 
