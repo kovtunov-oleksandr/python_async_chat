@@ -1,3 +1,4 @@
+from global_enums.send_message_to_chat import SendMessageToChat
 from server.config import server
 from server.server_utils.db_utils import async_session
 from server.models import Chat, ChatMember
@@ -6,7 +7,7 @@ from utils.protocol import Message, Connection
 from sqlalchemy.future import select
 
 
-@server.message_handler("send_message_to_chat")
+@server.message_handler(SendMessageToChat.COMMAND.value)
 async def send_message_to_chat(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     chat_id, user_id = content.get("chat_id"), content.get("user_id")
@@ -29,11 +30,11 @@ async def send_message_to_chat(message: Message, connection: Connection):
                         await server.sessions[user]["user_connection"].send_message(
                             message_to_chat
                         )
-                response_content = {"response": "MESSAGE SENT"}
+                response_content = {"response": SendMessageToChat.RESPONSE_MESSAGE_SENT.value}
             else:
-                response_content = {"response": "YOU ARE NOT IN THIS CHAT"}
+                response_content = {"response": SendMessageToChat.RESPONSE_NOT_IN_CHAT.value}
         else:
-            response_content = {"response": "THIS CHAT DOES NOT EXIST"}
+            response_content = {"response": SendMessageToChat.RESPONSE_CHAT_NOT_FOUND.value}
         response = Message(
             "Send_message_to_chat",
             "server",
