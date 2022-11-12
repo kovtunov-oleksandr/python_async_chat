@@ -25,7 +25,6 @@ async def send_message_to_chat(message: Message, connection: Connection):
                     {"response": "THIS CHAT DOES NOT EXIST"}
                 ),
             )
-            return await connection.send_message(response)
         else:
             member_in_chat = await session.scalar(
                 select(ChatMember).where(
@@ -52,7 +51,6 @@ async def send_message_to_chat(message: Message, connection: Connection):
                     "_",
                     Message.decode_content_to_json({"response": "MESSAGE SENT"}),
                 )
-                return await connection.send_message(response)
             else:
                 response = Message(
                     "send_message_to_chat",
@@ -63,4 +61,4 @@ async def send_message_to_chat(message: Message, connection: Connection):
                         {"response": "YOU ARE NOT IN THIS CHAT"}
                     ),
                 )
-                return await connection.send_message(response)
+        return await connection.send_message(response)
