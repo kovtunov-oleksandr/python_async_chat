@@ -10,9 +10,7 @@ from global_enums import SignUP, Protocol
 @server.message_handler(SignUP.COMMAND.value)
 async def sign_up(message: Message, connection: Connection):
     content = message.encode_content_from_json()
-    logger.info(
-        f"Sign up attempt {content.get('nickname'), content.get('password'), content.get('email')}"
-    )
+    logger.info(f"Sign up attempt {content.get('nickname'), content.get('password'), content.get('email')}")
     nickname_credentials, password_credentials = check_nickname_password_credentials(
         content.get("nickname"), content.get("password")
     )
@@ -27,28 +25,18 @@ async def sign_up(message: Message, connection: Connection):
             connection,
         )
     async with async_session() as session, session.begin():
-        user = await session.scalar(
-            select(User).where(User.nickname == content.get("nickname"))
-        )
+        user = await session.scalar(select(User).where(User.nickname == content.get("nickname")))
         if user is not None:
-            return await handle_response(
-                SignUP.RESPONSE_LOGIN_EXISTS.value, connection, session
-            )
+            return await handle_response(SignUP.RESPONSE_LOGIN_EXISTS.value, connection, session)
         else:
-            return await handle_response(
-                SignUP.RESPONSE_REGISTRATION_SUCCESS.value, connection, session, content
-            )
+            return await handle_response(SignUP.RESPONSE_REGISTRATION_SUCCESS.value, connection, session, content)
 
 
 def check_nickname_password_credentials(nickname: str, password: str):
     nickname_result = (
-        4 <= len(nickname) <= 16
-        and (nickname.isascii() is True and nickname.isalpha() is True)
-        and nickname[0] != " "
+        4 <= len(nickname) <= 16 and (nickname.isascii() is True and nickname.isalpha() is True) and nickname[0] != " "
     ) and True
-    password_result = (
-        len(password) <= 50 and password.isascii() is True and password[0] != " "
-    ) and True
+    password_result = (len(password) <= 50 and password.isascii() is True and password[0] != " ") and True
     return nickname_result, password_result
 
 
@@ -71,7 +59,11 @@ async def handle_response(
     content: dict = None,
 ):
     response = Message(
-        SignUP.COMMAND.value, Protocol.SERVER.value, Protocol.CLIENT.value, Protocol.EMPTY_TOKEN.value, Message.decode_content_to_json({"response": response_text})
+        SignUP.COMMAND.value,
+        Protocol.SERVER.value,
+        Protocol.CLIENT.value,
+        Protocol.EMPTY_TOKEN.value,
+        Message.decode_content_to_json({"response": response_text}),
     )
     if response_text == SignUP.RESPONSE_REGISTRATION_SUCCESS.value:
         await add_user_to_db(content, session, connection)
