@@ -5,9 +5,10 @@ from server.models import User, UserSession
 from server.server_utils.db_utils import async_session
 from utils.logger import logger
 from utils.protocol import Message, Connection
+from global_enums import Protocol, SignIn
 
 
-@server.message_handler("sign_in")
+@server.message_handler(SignIn.COMMAND.value)
 async def sign_in(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     logger.info(f"Sign in attempt {content.get('nickname')}, {content.get('password')}")
@@ -16,22 +17,34 @@ async def sign_in(message: Message, connection: Connection):
         if user is not None and user.password == content.get("password"):
             token = await create_session(session, user, connection)
             response = Message(
-                "sign_in",
-                "server",
-                "client",
+                SignIn.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
                 token,
                 Message.decode_content_to_json(
-                    {"response": "SUCCESSFULLY LOGGED IN", "nickname": user.nickname, "user_id": user.id}
+                    {
+                        "response": SignIn.RESPONSE_SIGN_IN_SUCCESSFUL.value,
+                        "nickname": user.nickname,
+                        "user_id": user.id,
+                    }
                 ),
             )
             return await connection.send_message(response)
         elif user is not None and user.password != content.get("password"):
             response = Message(
-                "sign_in", "server", "client", "_", Message.decode_content_to_json({"response": "INCORRECT PASSWORD"})
+                SignIn.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
+                Message.decode_content_to_json({"response": SignIn.RESPONSE_INCORRECT_PASSWORD.value}),
             )
             return await connection.send_message(response)
         response = Message(
-            "sign_in", "server", "client", "_", Message.decode_content_to_json({"response": "USER NOT FOUND"})
+            SignIn.COMMAND.value,
+            Protocol.SERVER.value,
+            Protocol.CLIENT.value,
+            Protocol.EMPTY_TOKEN.value,
+            Message.decode_content_to_json({"response": SignIn.RESPONSE_USER_NOT_FOUND.value}),
         )
         return await connection.send_message(response)
 
