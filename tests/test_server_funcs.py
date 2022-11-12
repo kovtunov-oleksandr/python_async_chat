@@ -95,10 +95,6 @@ async def test_user_token_auth_fail(test_client):
 async def test_create_chat(test_client,chat_name, expected_response):
     data = {"chat_name": chat_name, "user_id": test_client.user_id, "chat_type": Chat.GROUP_CHAT_TYPE.value}
     command, sender, receiver, token = Commands.CREATE_CHAT.value, Misc.CLIENT.value, Misc.SERVER.value, test_client.token
-    print(command)
-    print(sender)
-    print(receiver)
-    print(token)
     message = Message(command, sender, receiver, token, Message.decode_content_to_json(data))
     response = await test_client.send_message(message)
     message: Message = Message.parse_protocol_message(response)
@@ -108,3 +104,15 @@ async def test_create_chat(test_client,chat_name, expected_response):
     assert message.receiver == sender
     assert content.get("response") == expected_response
 
+# @pytest.mark.asyncio
+# async def test_sign_up_2(test_client):
+#     data = {"nickname": "admin", "password": "adminadmin"}
+#     command, sender, receiver, token = "sign_up", "client", "server", "_"
+#     response = await test_client.sign_in(data)
+#     message: Message = Message.parse_protocol_message(response)
+#     content = message.encode_content_from_json()
+#     assert message.command == command
+#     assert message.sender == receiver
+#     assert message.receiver == sender
+#     #assert len(message.token) == expected_token
+#     assert content.get("response") == SignIn.RESPONSE_SUCCESSFULL_LOGIN
