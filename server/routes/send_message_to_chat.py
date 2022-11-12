@@ -1,4 +1,4 @@
-from global_enums.send_message_to_chat import SendMessageToChat
+from global_enums import SendMessageToChat, Protocol
 from server.config import server
 from server.server_utils.db_utils import async_session
 from server.models import Chat, ChatMember
@@ -23,7 +23,11 @@ async def send_message_to_chat(message: Message, connection: Connection):
             if user_id in users_id:
                 users_id.remove(user_id)
                 message_to_chat = Message(
-                    message.command, "server", "client", "_", message.content
+                    SendMessageToChat.COMMAND.value,
+                    Protocol.SERVER.value,
+                    Protocol.CLIENT.value,
+                    Protocol.EMPTY_TOKEN.value,
+                    message.content
                 )
                 for user in users_id:
                     if user in server.sessions:
@@ -36,10 +40,10 @@ async def send_message_to_chat(message: Message, connection: Connection):
         else:
             response_content = {"response": SendMessageToChat.RESPONSE_CHAT_NOT_FOUND.value}
         response = Message(
-            "Send_message_to_chat",
-            "server",
-            "client",
-            "_",
+            SendMessageToChat.COMMAND.value,
+            Protocol.SERVER.value,
+            Protocol.CLIENT.value,
+            Protocol.EMPTY_TOKEN.value,
             Message.decode_content_to_json(response_content),
         )
         return await connection.send_message(response)
