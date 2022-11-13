@@ -1,7 +1,6 @@
 import asyncio
 import pytest
 import pytest_asyncio
-from client.client import ChatClient
 
 
 @pytest.fixture(scope="session")
@@ -10,42 +9,66 @@ def event_loop():
 
 
 @pytest_asyncio.fixture(scope="module")
-async def recreate_db():
-    from server.server_utils.db_utils import engine
-    from server.models.user import Base
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-
-
-@pytest_asyncio.fixture(scope="module")
-async def test_client(recreate_db):
-    from simple_client import TestClient
-    client = TestClient()
-    asyncio.create_task(client.start_client())
+async def client():
+    from client.client import ChatClient
+    test_client = ChatClient("localhost", 5050)
+    asyncio.create_task(test_client.quick_start())
     await asyncio.sleep(1)
+    yield test_client
+    await test_client.disconnect()
+
+
+@pytest_asyncio.fixture
+async def session():
+    from server.server_utils.db_utils import async_session
+    async with async_session() as session, session.begin():
+        yield session
+
+
+@pytest.fixture
+def generate_correct_login_and_pw():
+    import secrets
+    import string
+    legacy_chars = string.ascii_letters
+    login = ''.join(secrets.choice(legacy_chars) for i in range(10))
+    password = ''.join(secrets.choice(legacy_chars) for i in range(20))
+    return login, password
+
+
+@pytest.fixture
+def generate_incorrect_password(generate_correct_login_and_pw):
+    login, password = generate_correct_login_and_pw
+    return login, f"  {password}"
+
+
+@pytest.fixture
+def generate_incorrect_login(generate_correct_login_and_pw):
+    login, password = generate_correct_login_and_pw
+    return f"  {login}", password
+
+
+@pytest_asyncio.fixture
+async def generate_user_in_db(generate_correct_login_and_pw):
+    from server.models import User
+    from server.server_utils.db_utils import async_session
+    login, password = generate_correct_login_and_pw
+    user = User(nickname=login, password=password)
+    async with async_session() as user_session, user_session.begin():
+        user_session.add(user)
+    yield login, password
+    async with async_session() as user_session, user_session.begin():
+        await user_session.delete(user)
+
+
+@pytest_asyncio.fixture
+async def create_user_session(client, generate_user_in_db):
+    login, password = generate_user_in_db
+    data = {"nickname": login, "password": password}
+    response = await client.sign_in(data)
+    content = response.encode_content_from_json()
+    client.token = response.token
+    client.user_id = content.get("user_id")
     return client
-
-
-# TODO: Real chat client (not working atm)
-# @pytest_asyncio.fixture(scope="module")
-# async def test_client(recreate_db):
-#     client = ChatClient("localhost", 5050)
-#     asyncio.create_task(client.quick_start())
-#     return client
-
-
-
-# @pytest.fixture
-# def count_routes() -> int:
-#     dir_path = r'C:/Users/k3nz0/PycharmProjects/python_async_chat/server/routes'  # TODO: reformat string path
-#     count = 0
-#     for path in os.listdir(dir_path):
-#         if os.path.isfile(os.path.join(dir_path, path)) and os.path.basename(os.path.join(dir_path, path)) != "__init__.py":
-#             count += 1
-#     return count
 
 
 
