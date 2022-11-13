@@ -4,9 +4,10 @@ from server.server_utils.db_utils import async_session
 from server.config import server
 from utils.logger import logger
 from utils.protocol import Message, Connection
+from global_enums import Protocol, GetGroups
 
 
-@server.message_handler("get_all_groups")
+@server.message_handler(GetGroups.COMMAND.value)
 async def get_group_members(message: Message, connection: Connection):
     content = message.encode_content_from_json()
     user_id = content.get("user_id")
@@ -16,18 +17,18 @@ async def get_group_members(message: Message, connection: Connection):
         chats = [{"chat_name": chat.chat_name, "chat_id": chat.id} for chat in chats]
         if not chats:
             response = Message(
-                "get_all_groups",
-                "server",
-                "client",
-                "_",
-                Message.decode_content_to_json({"response": f"THERE IS NO CHAT"}),
+                GetGroups.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
+                Message.decode_content_to_json({"response": GetGroups.RESPONSE_CHAT_NOT_FOUND.value}),
             )
         else:
             response = Message(
-                "get_all_groups",
-                "server",
-                "client",
-                "_",
-                Message.decode_content_to_json({"response": "LIST OF CHATS RECEIVED", "chats": chats}),
+                GetGroups.COMMAND.value,
+                Protocol.SERVER.value,
+                Protocol.CLIENT.value,
+                Protocol.EMPTY_TOKEN.value,
+                Message.decode_content_to_json({"response": GetGroups.RESPONSE_LIST_RETRIEVED.value, "chats": chats}),
             )
     return await connection.send_message(response)

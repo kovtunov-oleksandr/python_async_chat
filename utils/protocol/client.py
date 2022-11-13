@@ -8,6 +8,9 @@ class Client:
         self.host = host
         self.port = port
         self.connection = None
+        self.nickname = None
+        self.user_id = None
+        self.token = None
 
     async def connect(self):
         reader, writer = await asyncio.open_connection(self.host, self.port)
@@ -18,13 +21,11 @@ class Client:
             message
 
     async def send_message(self, message: Message):
-        await self.connection.send_message_wait_answer(message)  # TODO: check
+        return await self.connection.send_message_wait_answer(message)
 
     async def quick_start(self):
         await self.connect()
         await asyncio.create_task(self.read_messages())
 
-
-if __name__ == "__main__":
-    client = Client("localhost", 5050)
-    asyncio.run(client.quick_start())
+    async def disconnect(self):
+        await self.connection.disconnect()

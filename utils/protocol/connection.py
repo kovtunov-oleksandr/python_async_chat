@@ -46,3 +46,6 @@ class Connection:
             if message.command in self.waiters:
                 self.waiters[message.command].message = message
             yield message
+
+    async def disconnect(self):
+        self.writer.close()
