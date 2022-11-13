@@ -11,6 +11,7 @@ def event_loop():
 @pytest_asyncio.fixture(scope="module")
 async def client():
     from client.client import ChatClient
+
     test_client = ChatClient("localhost", 5050)
     asyncio.create_task(test_client.quick_start())
     await asyncio.sleep(1)
@@ -21,6 +22,7 @@ async def client():
 @pytest_asyncio.fixture
 async def session():
     from server.server_utils.db_utils import async_session
+
     async with async_session() as session, session.begin():
         yield session
 
@@ -29,9 +31,10 @@ async def session():
 def generate_correct_login_and_pw():
     import secrets
     import string
+
     legacy_chars = string.ascii_letters
-    login = ''.join(secrets.choice(legacy_chars) for i in range(10))
-    password = ''.join(secrets.choice(legacy_chars) for i in range(20))
+    login = "".join(secrets.choice(legacy_chars) for i in range(10))
+    password = "".join(secrets.choice(legacy_chars) for i in range(20))
     return login, password
 
 
@@ -51,6 +54,7 @@ def generate_incorrect_login(generate_correct_login_and_pw):
 async def generate_user_in_db(generate_correct_login_and_pw):
     from server.models import User
     from server.server_utils.db_utils import async_session
+
     login, password = generate_correct_login_and_pw
     user = User(nickname=login, password=password)
     async with async_session() as user_session, user_session.begin():
@@ -69,8 +73,3 @@ async def create_user_session(client, generate_user_in_db):
     client.token = response.token
     client.user_id = content.get("user_id")
     return client
-
-
-
-
-

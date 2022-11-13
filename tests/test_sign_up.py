@@ -7,7 +7,6 @@ from sqlalchemy.future import select
 
 @pytest.mark.asyncio
 class TestSignUp:
-
     async def test_successful_sign_up(self, client, generate_correct_login_and_pw, session):
         login, password = generate_correct_login_and_pw
         data = {"nickname": login, "password": password}

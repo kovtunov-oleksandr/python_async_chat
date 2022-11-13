@@ -6,7 +6,6 @@ from utils.protocol import Message
 
 @pytest.mark.asyncio
 class TestUserSession:
-
     async def test_non_existent_user_session(self, client, generate_correct_login_and_pw):
         login, password = generate_correct_login_and_pw
         data = {"nickname": login, "password": password}
@@ -37,4 +36,3 @@ class TestUserSession:
         assert response.sender == Protocol.SERVER.value
         assert response.receiver == Protocol.CLIENT.value
         assert content.get("response") == Session.TOKEN_MISSMATCH.value
-

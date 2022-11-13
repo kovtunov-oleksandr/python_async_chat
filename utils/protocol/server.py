@@ -40,14 +40,26 @@ class Server:
             if user_id not in self.sessions:
                 response = {"response": Session.NO_SESSION.value}
                 await connection.send_message(
-                    Message(message.command, Protocol.SERVER.value, Protocol.CLIENT.value, Protocol.EMPTY_TOKEN.value, Message.decode_content_to_json(response))
+                    Message(
+                        message.command,
+                        Protocol.SERVER.value,
+                        Protocol.CLIENT.value,
+                        Protocol.EMPTY_TOKEN.value,
+                        Message.decode_content_to_json(response),
+                    )
                 )
                 return False
             user_session = self.sessions.get(user_id).get("user_session")
             if user_session.token != message.token:
                 response = {"response": Session.TOKEN_MISSMATCH.value}
                 await connection.send_message(
-                    Message(message.command, Protocol.SERVER.value, Protocol.CLIENT.value, Protocol.EMPTY_TOKEN.value, Message.decode_content_to_json(response))
+                    Message(
+                        message.command,
+                        Protocol.SERVER.value,
+                        Protocol.CLIENT.value,
+                        Protocol.EMPTY_TOKEN.value,
+                        Message.decode_content_to_json(response),
+                    )
                 )
                 return False
         logger.info("Token auth check successful")
