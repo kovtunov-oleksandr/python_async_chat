@@ -9,6 +9,7 @@ class Server:
         self.port = port
         self.sessions = {}
         self.__command_handler_map = {}
+        self.pending_messages = {}
 
     async def run_server(self):
         server = await asyncio.start_server(self._handle_connection, self.host, self.port)
@@ -23,6 +24,7 @@ class Server:
 
     async def _get_handler(self, message: Message, connection: Connection):
         if await self.check_user_session(message, connection):
+            # await self.send_message_by_server_sender(connection)
             await self.__command_handler_map[message.command](message, connection)
 
     def message_handler(self, method: str):
