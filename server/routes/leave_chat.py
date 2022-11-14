@@ -1,6 +1,6 @@
 from sqlalchemy.future import select
 from global_enums import LeaveChat, Protocol
-from server.models import ChatMember
+from server.models import Chat, ChatMember
 from server.server_utils.db_utils import async_session
 from server.config import server
 from utils.logger import logger
@@ -23,6 +23,8 @@ async def leave_chat(message: Message, connection: Connection):
                 for user in users_in_chat
                 if user.user_id == user_id
             ]:
+                if len(users_in_chat) == 1:
+                    await session.delete(await session.scalar(select(Chat).where(Chat.id == chat_id)))
                 response_content = {"response": LeaveChat.RESPONSE_LEFT_CHAT.value}
             else:
                 response_content = {
