@@ -13,23 +13,15 @@ async def leave_chat(message: Message, connection: Connection):
     chat_id, user_id = content["chat_id"], content["user_id"]
     logger.info(f"Attempt to leave chat {chat_id} by user_id {user_id}")
     async with async_session() as session, session.begin():
-        chat_members = await session.scalars(
-            select(ChatMember).where(ChatMember.chat_id == chat_id)
-        )
+        chat_members = await session.scalars(select(ChatMember).where(ChatMember.chat_id == chat_id))
         users_in_chat = chat_members.all()
         if users_in_chat:
-            if [
-                await session.delete(user)
-                for user in users_in_chat
-                if user.user_id == user_id
-            ]:
+            if [await session.delete(user) for user in users_in_chat if user.user_id == user_id]:
                 if len(users_in_chat) == 1:
                     await session.delete(await session.scalar(select(Chat).where(Chat.id == chat_id)))
                 response_content = {"response": LeaveChat.RESPONSE_LEFT_CHAT.value}
             else:
-                response_content = {
-                    "response": LeaveChat.RESPONSE_NOT_CHAT_MEMBER.value
-                }
+                response_content = {"response": LeaveChat.RESPONSE_NOT_CHAT_MEMBER.value}
         else:
             response_content = {"response": LeaveChat.RESPONSE_CHAT_NOT_FOUND.value}
     response = Message(
