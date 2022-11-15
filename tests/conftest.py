@@ -8,6 +8,41 @@ def event_loop():
     return asyncio.get_event_loop()
 
 
+@pytest.fixture
+def generate_valid_login():
+    pass
+
+
+@pytest.fixture
+def generate_valid_pw():
+    import secrets
+    import string
+
+    legacy_chars = string.ascii_letters
+    password = "".join(secrets.choice(legacy_chars) for i in range(20))
+    return password
+
+
+def generate_wrong_login_list():
+    import secrets
+    import string
+
+    legacy_chars = string.ascii_letters
+    invalid_login = []
+    for max_symbols in [3, 10, 17]:
+        invalid_login.append("".join(secrets.choice(legacy_chars) for i in range(max_symbols)))
+    invalid_login[1] = " " + invalid_login[1]
+    return invalid_login
+
+
+invalid_logins = generate_wrong_login_list()
+
+
+@pytest.fixture(params=invalid_logins)
+def get_invalid_login(request):
+    return request.param
+
+
 @pytest_asyncio.fixture(scope="module")
 async def client():
     from client.client import ChatClient

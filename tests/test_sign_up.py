@@ -39,8 +39,8 @@ class TestSignUp:
         assert response.receiver == Protocol.CLIENT.value
         assert content.get("response") == SignUP.RESPONSE_INVALID_PASSWORD.value
 
-    async def test_sign_up_incorrect_login(self, client, generate_incorrect_login):
-        login, password = generate_incorrect_login
+    async def test_sign_up_incorrect_login(self, client, get_invalid_login, generate_valid_pw):
+        login, password = get_invalid_login, generate_valid_pw
         data = {"nickname": login, "password": password}
         response: Message = await client.sign_up(data)
         content = response.encode_content_from_json()
