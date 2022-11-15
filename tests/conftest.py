@@ -61,29 +61,6 @@ async def session():
         yield session
 
 
-@pytest.fixture
-def generate_correct_login_and_pw():
-    import secrets
-    import string
-
-    legacy_chars = string.ascii_letters
-    login = "".join(secrets.choice(legacy_chars) for i in range(10))
-    password = "".join(secrets.choice(legacy_chars) for i in range(20))
-    return login, password
-
-
-@pytest.fixture
-def generate_incorrect_password(generate_correct_login_and_pw):
-    login, password = generate_correct_login_and_pw
-    return login, f"  {password}"
-
-
-@pytest.fixture
-def generate_incorrect_login(generate_correct_login_and_pw):
-    login, password = generate_correct_login_and_pw
-    return f"  {login}", password
-
-
 @pytest_asyncio.fixture
 async def generate_user_in_db(generate_valid_login, generate_valid_pw):
     from server.models import User

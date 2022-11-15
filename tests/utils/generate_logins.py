@@ -3,7 +3,7 @@ import string
 
 
 def generate_non_ascii() -> str:
-    ru_chars = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+    ru_chars = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
     return "".join(secrets.choice(ru_chars) for i in range(10))
 
 
