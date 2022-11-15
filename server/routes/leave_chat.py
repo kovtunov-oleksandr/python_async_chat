@@ -10,7 +10,7 @@ from utils.protocol import Message, Connection
 @server.message_handler(LeaveChat.COMMAND.value)
 async def leave_chat(message: Message, connection: Connection):
     content = message.encode_content_from_json()
-    chat_id, user_id = content["chat_id"], content["user_id"]
+    chat_id, user_id = content.get("chat_id"), content.get("user_id")
     logger.info(f"Attempt to leave chat {chat_id} by user_id {user_id}")
     async with async_session() as session, session.begin():
         chat_members = await session.scalars(select(ChatMember).where(ChatMember.chat_id == chat_id))
