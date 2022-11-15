@@ -2,11 +2,11 @@ import asyncio
 import secrets
 from sqlalchemy.future import select
 from server.config import server
-from server.models import User, UserSession
+from server.models import User, UserSession, PendingMessages
 from server.server_utils.db_utils import async_session
 from utils.logger import logger
 from utils.protocol import Message, Connection
-from global_enums import Protocol, SignIn
+from global_enums import Protocol, SignIn, SendMessageToChat
 
 
 @server.message_handler(SignIn.COMMAND.value)
@@ -30,8 +30,9 @@ async def sign_in(message: Message, connection: Connection):
                     }
                 ),
             )
-            await connection.send_message(response)
-            return await send_pending_message(user.id, connection)
+            response = await connection.send_message(response)
+            await send_pending_message(user.id, connection, session, response)
+            return response
         elif user is not None and user.password != content.get("password"):
             response = Message(
                 SignIn.COMMAND.value,
@@ -60,13 +61,13 @@ async def create_session(session: async_session, user: User, connection: Connect
     return token
 
 
-async def send_pending_message(user_id, connection: Connection):
+async def send_pending_message(user_id: int, connection: Connection, session: async_session, response: Message):
     logger.info(f"Check for pending messages to user {user_id}")
-    awaiting_messages = server.pending_messages.get(user_id)
-    if awaiting_messages:
-        for message_from_chat in awaiting_messages:
+    pending_messages = await session.scalars(select(PendingMessages).where(PendingMessages.user_id == user_id))
+    if pending_messages:
+        for pending_message in pending_messages:
             await asyncio.sleep(0.01)
-            content = message_from_chat.encode_content_from_json()
-            logger.info(f"Attempt send_pending_messages to user_id {user_id} from chat_id {content.get('chat_id')}")
-            await connection.send_message(message_from_chat)
-        server.pending_messages.pop(user_id)
+            message = Message.parse_protocol_message(pending_message.message)
+            logger.info(f"Attempt send_pending_messages to user_id {user_id} {message.encode_content_from_json()}")
+            await session.delete(pending_message)
+            await connection.send_message(message)

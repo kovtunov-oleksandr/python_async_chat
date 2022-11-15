@@ -1,0 +1,17 @@
+from sqlalchemy import String, Column, Integer, DateTime, func, ForeignKey
+from sqlalchemy.orm import relationship
+
+from server.models.user import Base
+
+
+class PendingMessages(Base):
+    __tablename__ = "pending_messages"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    chat_id = Column(Integer, ForeignKey("chat.id"))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    message = Column(String)
+
+    user = relationship("User", backref="pending_message")
+    chat = relationship("Chat", backref="pending_message")
