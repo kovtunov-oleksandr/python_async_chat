@@ -1,6 +1,10 @@
 import asyncio
 import pytest
 import pytest_asyncio
+from tests.utils import generate_invalid_password_list, generate_invalid_login_list
+
+invalid_logins: list = generate_invalid_login_list()
+invalid_passwords: list = generate_invalid_password_list()
 
 
 @pytest.fixture(scope="session")
@@ -10,7 +14,12 @@ def event_loop():
 
 @pytest.fixture
 def generate_valid_login():
-    pass
+    import secrets
+    import string
+
+    legacy_chars = string.ascii_letters
+    login = "".join(secrets.choice(legacy_chars) for i in range(10))
+    return login
 
 
 @pytest.fixture
@@ -23,23 +32,13 @@ def generate_valid_pw():
     return password
 
 
-def generate_wrong_login_list():
-    import secrets
-    import string
-
-    legacy_chars = string.ascii_letters
-    invalid_login = []
-    for max_symbols in [3, 10, 17]:
-        invalid_login.append("".join(secrets.choice(legacy_chars) for i in range(max_symbols)))
-    invalid_login[1] = " " + invalid_login[1]
-    return invalid_login
-
-
-invalid_logins = generate_wrong_login_list()
-
-
 @pytest.fixture(params=invalid_logins)
 def get_invalid_login(request):
+    return request.param
+
+
+@pytest.fixture(params=invalid_passwords)
+def get_invalid_password(request):
     return request.param
 
 
@@ -86,11 +85,11 @@ def generate_incorrect_login(generate_correct_login_and_pw):
 
 
 @pytest_asyncio.fixture
-async def generate_user_in_db(generate_correct_login_and_pw):
+async def generate_user_in_db(generate_valid_login, generate_valid_pw):
     from server.models import User
     from server.server_utils.db_utils import async_session
 
-    login, password = generate_correct_login_and_pw
+    login, password = generate_valid_login, generate_valid_pw
     user = User(nickname=login, password=password)
     async with async_session() as user_session, user_session.begin():
         user_session.add(user)
