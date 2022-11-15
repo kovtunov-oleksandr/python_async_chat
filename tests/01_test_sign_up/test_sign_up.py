@@ -16,7 +16,7 @@ class TestSignUp:
         user = await session.scalar(select(User).where(User.nickname == generate_valid_login))
         assert user is not None, "User not created in DB"
 
-    async def test_fail_sign_up_login_exists(self, client, generate_user_in_db):
+    async def test_sign_up_login_exists(self, client, generate_user_in_db):
         response, content = await self.send_message(client, generate_user_in_db)
         assert response.command == SignUP.COMMAND.value
         assert response.sender == Protocol.SERVER.value
