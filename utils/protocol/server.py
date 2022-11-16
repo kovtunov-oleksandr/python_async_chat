@@ -23,13 +23,11 @@ class Server:
 
     async def _get_handler(self, message: Message, connection: Connection):
         if await self.check_user_session(message, connection):
-            # await self.send_message_by_server_sender(connection)
             await self.__command_handler_map[message.command](message, connection)
 
     def message_handler(self, method: str):
         def decorator(func):
             self.__command_handler_map[method] = func
-
         return decorator
 
     async def check_user_session(self, message: Message, connection: Connection) -> bool:
