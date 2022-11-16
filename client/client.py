@@ -1,5 +1,5 @@
+from global_enums import *
 from utils.protocol import Client, Message
-from global_enums import Protocol, SignIn, SignUP, GetMembers, GetGroups, JoinGroup, CreateChat
 
 
 class ChatClient(Client):
@@ -65,3 +65,14 @@ class ChatClient(Client):
             Message.decode_content_to_json(data),
         )
         return await self.send_message(message)
+
+    async def leave_chat(self, data: dict):
+        data["user_id"] = self.user_id
+        message = Message(
+            LeaveChat.COMMAND.value,
+            Protocol.CLIENT.value,
+            Protocol.SERVER.value,
+            self.token,
+            Message.decode_content_to_json(data),
+        )
+        await self.send_message(message)
