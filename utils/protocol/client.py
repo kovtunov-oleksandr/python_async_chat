@@ -18,8 +18,7 @@ class Client:
 
     async def read_messages(self):
         async for message in self.connection.start_reading():
-            # await asyncio.sleep(0.1)
-            self.answer_handler(message)
+            message
 
     async def send_message(self, message: Message):
         return await self.connection.send_message_wait_answer(message)
@@ -30,16 +29,3 @@ class Client:
 
     async def disconnect(self):
         await self.connection.disconnect()
-
-    def answer_handler(self, message: Message):
-        content = message.encode_content_from_json()
-        if (
-                message.command == "sign_in"
-                and content.get("response") == "SUCCESSFULLY LOGGED IN"
-
-        ):
-            self.token = message.token
-            self.nickname = content.get("nickname")
-            self.user_id = content.get("user_id")
-
-        return message
