@@ -1,5 +1,6 @@
 import secrets
 import string
+import random
 
 
 def generate_non_ascii() -> str:
@@ -25,3 +26,15 @@ def generate_invalid_password_list() -> list:
     invalid_pw[0] = " " + invalid_pw[0]
     invalid_pw.append(generate_non_ascii())
     return invalid_pw
+
+
+def generate_single_valid_login() -> str:
+    legacy_chars = string.ascii_letters
+    login = "".join(secrets.choice(legacy_chars) for i in range(random.randint(4, 16)))
+    return login
+
+
+def generate_single_valid_pw() -> str:
+    legacy_chars = string.ascii_letters
+    password = "".join(secrets.choice(legacy_chars) for i in range(random.randint(10, 50)))
+    return password
