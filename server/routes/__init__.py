@@ -4,4 +4,6 @@ from server.routes import (
     create_chat,
     get_group_members,
     leave_chat,
+    get_all_groups,
+    join_to_group_chat,
 )
