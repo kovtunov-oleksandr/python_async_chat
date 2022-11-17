@@ -74,8 +74,8 @@ async def generate_user_in_db(get_amount):
 
 @pytest_asyncio.fixture
 async def create_user_session(client, get_single_generated_user):
-    login, password = get_single_generated_user
-    data = {"nickname": login, "password": password}
+    user = get_single_generated_user
+    data = {"nickname": user.nickname, "password": user.password}
     response = await client.sign_in(data)
     content = response.encode_content_from_json()
     client.token = response.token
@@ -85,5 +85,5 @@ async def create_user_session(client, get_single_generated_user):
 
 @pytest_asyncio.fixture
 def get_single_generated_user(generate_user_in_db):
-    user = generate_user_in_db[0]
-    return user.nickname, user.password
+    return generate_user_in_db[0]
+
