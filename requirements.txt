@@ -12,3 +12,5 @@ tomli==2.0.1
 SQLAlchemy==1.4.42
 aiosqlite==0.17.0
 typing_extensions==4.4.0
+pytest==7.1.2
+pytest-asyncio==0.20.1
