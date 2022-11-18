@@ -1,0 +1,7 @@
+import enum
+
+
+class Session(enum.Enum):
+
+    NO_SESSION = "ERROR: NO SUCH USER SESSION"
+    TOKEN_MISSMATCH = "USER SESSION ERROR: TOKEN AUTH FAIL"
