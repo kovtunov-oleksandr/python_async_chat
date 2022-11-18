@@ -29,7 +29,6 @@ class Server:
     def message_handler(self, method: str):
         def decorator(func):
             self.__command_handler_map[method] = func
-
         return decorator
 
     async def check_user_session(self, message: Message, connection: Connection) -> bool:
