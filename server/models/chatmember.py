@@ -11,5 +11,5 @@ class ChatMember(Base):
     chat_id = Column(Integer, ForeignKey("chat.id"))
     permissions = Column(Integer)
 
-    user = relationship("User", backref="chat_member")
-    chat = relationship("Chat", backref="chat_member")
+    user = relationship("User", back_populates="chat_members")
+    chat = relationship("Chat", back_populates="chat_members")

@@ -12,3 +12,4 @@ class Chat(Base):
     type = Column(Integer)
 
     user = relationship("User", backref="chat")
+    chat_members = relationship("ChatMember", back_populates="chat", cascade="all, delete")
