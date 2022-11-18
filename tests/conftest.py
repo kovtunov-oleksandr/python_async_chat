@@ -3,9 +3,11 @@ import pytest
 import pytest_asyncio
 from sqlalchemy import delete
 
+from tests.utils.generate_chat_name import generate_chat_name
 from client.client import ChatClient
 from server.server_utils.db_utils import async_session
-from server.models import User, UserSession
+from server.models import User, UserSession, Chat
+from global_enums import CreateChat
 from tests.utils.generate_logins import (
     generate_single_valid_login,
     generate_single_valid_pw,
@@ -65,7 +67,10 @@ def get_amount():
 @pytest_asyncio.fixture
 async def generate_user_in_db(get_amount):
     users = [
-        User(nickname=generate_single_valid_login(), password=generate_single_valid_pw()) for i in range(get_amount)
+        User(
+            nickname=generate_single_valid_login(), password=generate_single_valid_pw()
+        )
+        for i in range(get_amount)
     ]
     async with async_session() as user_session, user_session.begin():
         user_session.add_all(users)
@@ -73,6 +78,19 @@ async def generate_user_in_db(get_amount):
     async with async_session() as user_session, user_session.begin():
         [await user_session.delete(user) for user in users]
 
+
+@pytest_asyncio.fixture
+async def generate_chat_in_db(get_single_generated_user):
+    chat_name = generate_chat_name()
+    creator_id = get_single_generated_user.id
+    async with async_session() as user_session, user_session.begin():
+        chat = Chat(
+            chat_name=chat_name, creator_id=creator_id, type=CreateChat.PUBLIC.value
+        )
+        user_session.add(chat)
+    yield chat
+    async with async_session() as user_session, user_session.begin():
+        await user_session.delete(chat)
 
 
 @pytest_asyncio.fixture
@@ -89,4 +107,3 @@ async def create_user_session(client, get_single_generated_user):
 @pytest_asyncio.fixture
 def get_single_generated_user(generate_user_in_db):
     return generate_user_in_db[0]
-
