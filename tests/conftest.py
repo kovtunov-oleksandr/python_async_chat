@@ -1,9 +1,11 @@
 import asyncio
 import pytest
 import pytest_asyncio
+from sqlalchemy import delete
+
 from client.client import ChatClient
 from server.server_utils.db_utils import async_session
-from server.models import User
+from server.models import User, UserSession
 from tests.utils.generate_logins import (
     generate_single_valid_login,
     generate_single_valid_pw,
@@ -70,6 +72,7 @@ async def generate_user_in_db(get_amount):
     yield users
     async with async_session() as user_session, user_session.begin():
         [await user_session.delete(user) for user in users]
+
 
 
 @pytest_asyncio.fixture

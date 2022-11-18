@@ -7,13 +7,13 @@ from sqlalchemy.future import select
 
 @pytest.mark.asyncio
 class TestSignUp:
-    async def test_successful_sign_up(self, client, generate_valid_login, generate_valid_pw, session):
-        response, content = await self.send_message(client, (generate_valid_login, generate_valid_pw))
+    async def test_successful_sign_up(self, client, get_user, session):
+        response, content = await self.send_message(client, get_user)
         assert response.command == SignUP.COMMAND.value
         assert response.sender == Protocol.SERVER.value
         assert response.receiver == Protocol.CLIENT.value
         assert content.get("response") == SignUP.RESPONSE_REGISTRATION_SUCCESS.value, "Response mismatch"
-        user = await session.scalar(select(User).where(User.nickname == generate_valid_login))
+        user = await session.scalar(select(User).where(User.nickname == get_user[0]))
         assert user is not None, "User not created in DB"
 
     async def test_sign_up_login_exists(self, client, get_single_generated_user):
