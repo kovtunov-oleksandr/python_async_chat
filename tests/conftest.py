@@ -33,6 +33,10 @@ def generate_valid_login():
 def generate_chat_id():
     return generate_single_chat_id()
 
+@pytest_asyncio.fixture
+def generate_chat_in_db(generate_single_chat_in_db):
+    generate_single_chat_in_db(get_amount)
+
 
 @pytest.fixture
 def generate_valid_pw():
@@ -93,7 +97,7 @@ async def create_user_session(client, get_single_generated_user):
 
 
 @pytest_asyncio.fixture
-async def generate_chat_in_db(get_amount):
+async def generate_single_chat_in_db(get_amount):
     chats = [
         Chat(chat_name=generate_single_valid_chat_name(), creator_id=generate_single_creator_id(), type=generate_type()) for i in
         range(get_amount)
