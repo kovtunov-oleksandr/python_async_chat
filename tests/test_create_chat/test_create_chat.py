@@ -1,6 +1,7 @@
 from sqlalchemy.future import select
 from tests.utils.generate_chat_name import generate_chat_name
 import pytest
+from tests.utils.generate_chatmembers import generate_single_user_id
 from server.models import Chat, ChatMember
 from global_enums import CreateChat, Protocol
 from utils.protocol.message import Message
@@ -62,7 +63,7 @@ class TestCreateChat:
 
     async def test_failed_create_chat_second_user_not_found(self, create_user_session):
         client = create_user_session
-        second_user_id = -1
+        second_user_id = generate_single_user_id()
         chat_name = generate_chat_name()
         response, content = await self.send_message(
             client, (chat_name, CreateChat.PRIVATE.value, second_user_id)
