@@ -1,7 +1,7 @@
 import secrets
 import string
 import random
-
+from global_enums import CreateChat
 
 def generate_single_valid_chat_name() -> str:
     legacy_chars = string.ascii_letters
@@ -15,5 +15,5 @@ def generate_single_creator_id() -> int:
 
 
 def generate_type() -> int:
-    num = random.randint(1, 2)
+    num = random.randint(CreateChat.PRIVATE.value, CreateChat.PUBLIC.value)
     return num

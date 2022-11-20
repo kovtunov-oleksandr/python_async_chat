@@ -1,5 +1,5 @@
 import random
-
+from global_enums import CreateChat
 
 def generate_single_user_id() -> int:
     num = random.randint(1, 99999999)
@@ -12,5 +12,5 @@ def generate_single_chat_id() -> int:
 
 
 def generate_permissions() -> int:
-    num = random.randint(1, 2)
+    num = random.randint(CreateChat.PRIVATE.value, CreateChat.PUBLIC.value)
     return num
