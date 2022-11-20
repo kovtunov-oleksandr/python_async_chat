@@ -1,6 +1,5 @@
 from sqlalchemy.future import select
 import pytest
-from tests.utils.generate_chatmembers import generate_single_chat_id
 from server.models import ChatMember
 from global_enums import JoinGroup, Protocol
 from utils.protocol.message import Message
@@ -25,9 +24,9 @@ class TestJoinToGroupChat:
         )
         assert chat_member
 
-    async def test_failed_join_chat_not_found(self, create_user_session):
+    async def test_failed_join_chat_not_found(self, create_user_session, generate_non_exist_chat_id):
         client = create_user_session
-        chat_id = generate_single_chat_id()
+        chat_id = generate_non_exist_chat_id
         response, content = await self.send_message(client, chat_id)
         assert response.command == JoinGroup.COMMAND.value
         assert response.sender == Protocol.SERVER.value
