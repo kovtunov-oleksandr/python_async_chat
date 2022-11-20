@@ -8,9 +8,9 @@ from utils.protocol.message import Message
 
 @pytest.mark.asyncio
 class TestCreateChat:
-    async def test_successful_create_group_chat(self, create_user_session, session):
+    async def test_successful_create_group_chat(self, create_user_session, get_chat_name, session):
         client = create_user_session
-        chat_name = generate_chat_name()
+        chat_name = get_chat_name
         response, content = await self.send_message(
             client, (chat_name, CreateChat.PUBLIC.value)
         )
@@ -28,11 +28,11 @@ class TestCreateChat:
         assert chat_member is not None
 
     async def test_successful_create_private_chat(
-        self, create_user_session, generate_user_in_db, session
+        self, create_user_session, get_chat_name, generate_user_in_db, session
     ):
         client = create_user_session
         second_user = generate_user_in_db[1]
-        chat_name = generate_chat_name()
+        chat_name = get_chat_name
         response, content = await self.send_message(
             client, (chat_name, CreateChat.PRIVATE.value, second_user.id)
         )
