@@ -1,5 +1,4 @@
 from sqlalchemy.future import select
-from tests.utils.generate_chat_name import generate_chat_name
 import pytest
 from server.models import Chat, ChatMember
 from global_enums import CreateChat, Protocol
@@ -24,7 +23,7 @@ class TestCreateChat:
         assert chat_member is not None
 
     async def test_successful_create_private_chat(
-        self, create_user_session, get_chat_name, generate_user_in_db, session
+        self, create_user_session, generate_user_in_db, get_chat_name, session
     ):
         client = create_user_session
         second_user = generate_user_in_db[1]
@@ -48,10 +47,12 @@ class TestCreateChat:
         assert response.receiver == Protocol.CLIENT.value
         assert content.get("response") == CreateChat.RESPONSE_CHAT_NAME_EXISTS.value
 
-    async def test_failed_create_chat_second_user_not_found(self, create_user_session, generate_non_exist_user_id):
+    async def test_failed_create_chat_second_user_not_found(
+        self, create_user_session, get_chat_name, generate_non_exist_user_id
+    ):
         client = create_user_session
         second_user_id = generate_non_exist_user_id
-        chat_name = generate_chat_name()
+        chat_name = get_chat_name
         response, content = await self.send_message(client, (chat_name, CreateChat.PRIVATE.value, second_user_id))
         assert response.command == CreateChat.COMMAND.value
         assert response.sender == Protocol.SERVER.value
