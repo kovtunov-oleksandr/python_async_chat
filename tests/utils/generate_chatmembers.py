@@ -1,6 +1,7 @@
 import random
 from global_enums import CreateChat
 
+
 def generate_single_user_id() -> int:
     num = random.randint(1, 99999999)
     return num

@@ -3,6 +3,7 @@ import string
 import random
 from global_enums import CreateChat
 
+
 def generate_single_valid_chat_name() -> str:
     legacy_chars = string.ascii_letters
     chat = "".join(secrets.choice(legacy_chars) for i in range(random.randint(4, 16)))

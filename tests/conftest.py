@@ -132,5 +132,5 @@ def get_single_chatmember(generate_chatmember_in_db):
 
 
 @pytest_asyncio.fixture
-def get_single_chat(generate_chat_in_db):
-    return generate_chat_in_db[0]
+def get_single_chat(generate_chats_in_db):
+    return generate_chats_in_db[0]
