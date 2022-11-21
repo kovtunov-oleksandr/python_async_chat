@@ -7,9 +7,9 @@ from utils.protocol.message import Message
 
 @pytest.mark.asyncio
 class TestJoinToGroupChat:
-    async def test_successful_join(self, create_user_session, generate_chat_in_db, session):
+    async def test_successful_join(self, create_user_session, get_single_chat, session):
         client = create_user_session
-        chat = generate_chat_in_db
+        chat = get_single_chat
         response, content = await self.send_message(client, chat.id)
         assert response.command == JoinGroup.COMMAND.value
         assert response.sender == Protocol.SERVER.value
@@ -30,10 +30,10 @@ class TestJoinToGroupChat:
         assert content.get("response") == JoinGroup.RESPONSE_CHAT_NOT_FOUND.value
 
     async def test_failed_join_user_already_in_chat(
-        self, create_user_session, generate_chat_in_db, generate_chat_member
+        self, create_user_session, get_single_chat, generate_chat_member
     ):
         client = create_user_session
-        chat = generate_chat_in_db
+        chat = get_single_chat
         response, content = await self.send_message(client, chat.id)
         assert response.command == JoinGroup.COMMAND.value
         assert response.sender == Protocol.SERVER.value

@@ -39,9 +39,9 @@ class TestCreateChat:
         chat_members = chat_members.all()
         assert len(chat_members) == 2
 
-    async def test_failed_create_chat_name_exists(self, create_user_session, generate_chat_in_db):
+    async def test_failed_create_chat_name_exists(self, create_user_session, get_single_chat):
         client = create_user_session
-        chat_name = generate_chat_in_db.chat_name
+        chat_name = get_single_chat.chat_name
         response, content = await self.send_message(client, (chat_name, CreateChat.PUBLIC.value))
         assert response.command == CreateChat.COMMAND.value
         assert response.sender == Protocol.SERVER.value

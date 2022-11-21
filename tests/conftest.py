@@ -1,13 +1,11 @@
 import asyncio
 import pytest
 import pytest_asyncio
-from sqlalchemy import delete
 
-from tests.utils.generate_chat_name import generate_chat_name
 from client.client import ChatClient
 from server.server_utils.db_utils import async_session
-from server.models import User, UserSession, Chat
-from global_enums import CreateChat
+from server.models import User, Chat
+from tests.utils.generate_chats import generate_single_valid_chat_name, generate_single_creator_id, generate_type
 from tests.utils.generate_logins import (
     generate_single_valid_login,
     generate_single_valid_pw,
@@ -79,19 +77,22 @@ async def generate_user_in_db(get_amount):
         [await user_session.delete(user) for user in users]
 
 
-@pytest_asyncio.fixture
-async def generate_chat_in_db(get_single_generated_user):
-    chat_name = generate_chat_name()
-    creator_id = get_single_generated_user.id
+@pytest_asyncio.fixture(scope="function")
+async def generate_chats_in_db(get_amount):
+    chats = [
+        Chat(chat_name=generate_single_valid_chat_name(), creator_id=generate_single_creator_id(), type=generate_type())
+        for i in range(get_amount)
+    ]
     async with async_session() as user_session, user_session.begin():
-        chat = Chat(
-            chat_name=chat_name, creator_id=creator_id, type=CreateChat.PUBLIC.value
-        )
-        user_session.add(chat)
-    yield chat
+        user_session.add_all(chats)
+    yield chats
     async with async_session() as user_session, user_session.begin():
-        await user_session.delete(chat)
+        [await user_session.delete(chat) for chat in chats]
 
+
+@pytest_asyncio.fixture
+def get_single_chat(generate_chats_in_db):
+    return generate_chats_in_db[0]
 
 @pytest_asyncio.fixture
 async def create_user_session(client, get_single_generated_user):

@@ -18,9 +18,9 @@ def generate_non_exist_chat_id():
 
 
 @pytest_asyncio.fixture
-async def generate_chat_member(generate_user_in_db, generate_chat_in_db):
+async def generate_chat_member(generate_user_in_db, get_single_chat):
     user = generate_user_in_db[0]
-    chat = generate_chat_in_db
+    chat = get_single_chat
     async with async_session() as user_session, user_session.begin():
         chat_member = ChatMember(user_id=user.id, chat_id=chat.id, permissions=CreateChat.USER.value)
         user_session.add(chat_member)
