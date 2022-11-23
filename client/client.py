@@ -34,7 +34,7 @@ class ChatClient(Client):
         )
         return await self.send_message(message)
 
-    async def join_to_chat(self, data: dict):
+    async def join_to_group_chat(self, data: dict):
         data["user_id"] = self.user_id
         message = Message(
             JoinGroup.COMMAND.value,
