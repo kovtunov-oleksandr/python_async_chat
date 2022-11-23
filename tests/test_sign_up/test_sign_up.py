@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 from server.models import User
 from utils.protocol.message import Message
@@ -13,6 +14,7 @@ class TestSignUp:
         assert response.sender == Protocol.SERVER.value
         assert response.receiver == Protocol.CLIENT.value
         assert content.get("response") == SignUP.RESPONSE_REGISTRATION_SUCCESS.value, "Response mismatch"
+        await asyncio.sleep(0.1)
         user = await session.scalar(select(User).where(User.nickname == get_user[0]))
         assert user is not None, "User not created in DB"
 

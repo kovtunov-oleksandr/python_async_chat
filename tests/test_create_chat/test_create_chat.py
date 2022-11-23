@@ -1,3 +1,5 @@
+import asyncio
+
 from sqlalchemy.future import select
 import pytest
 from server.models import Chat, ChatMember
@@ -34,6 +36,7 @@ class TestCreateChat:
         assert response.receiver == Protocol.CLIENT.value
         assert content.get("response") == CreateChat.RESPONSE_CHAT_CREATED.value
         chat_id = content.get("chat_id")
+        await asyncio.sleep(0.1)
         chat_members = await session.scalars(select(ChatMember).where(ChatMember.chat_id == chat_id))
         chat_members = chat_members.all()
         assert len(chat_members) == 2
